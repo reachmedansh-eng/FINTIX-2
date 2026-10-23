@@ -1,0 +1,80 @@
+[
+ {
+  "size": "1440x900",
+  "overflow": -10,
+  "pageHeight": 2498,
+  "canvas": [
+   1430,
+   704
+  ],
+  "tiny": [],
+  "uppercase": [
+   "Medansh's city",
+   "Your buildings",
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA",
+   "Market pulse",
+   "BOLT",
+   "VNTA",
+   "Market news",
+   "Next lesson",
+   "Ledger"
+  ]
+ },
+ {
+  "size": "1024x768",
+  "overflow": -10,
+  "pageHeight": 2939,
+  "canvas": [
+   1014,
+   640
+  ],
+  "tiny": [],
+  "uppercase": [
+   "Medansh's city",
+   "Your buildings",
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA",
+   "Market pulse",
+   "BOLT",
+   "VNTA",
+   "Market news",
+   "Next lesson",
+   "Ledger"
+  ]
+ },
+ {
+  "size": "390x844",
+  "overflow": 0,
+  "pageHeight": 4111,
+  "canvas": [
+   390,
+   557
+  ],
+  "tiny": [],
+  "uppercase": [
+   "Medansh's city",
+   "Your buildings",
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA",
+   "Market pulse",
+   "BOLT",
+   "VNTA",
+   "Market news",
+   "Next lesson",
+   "Ledger"
+  ]
+ }
+]

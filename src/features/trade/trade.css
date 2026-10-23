@@ -1,0 +1,3144 @@
+/* ------------------------------------------------------------------ */
+/* FINTIX — Trading simulator, and the controls Home shares with it     */
+/* Every class here starts with sim-, tut-, lvl- or desk-: stylesheets  */
+/* from other sections stay loaded after in-app navigation, so names    */
+/* must never be shared. Values come from the tokens in globals.css.    */
+/* ------------------------------------------------------------------ */
+
+.sim {
+  /* Older names, kept as aliases of the system tokens. */
+  --sim-face: var(--fx-panel);
+  --sim-face-lit: var(--fx-raised);
+  --sim-line: var(--fx-line);
+  --sim-line-lit: var(--fx-control);
+  --sim-soft: var(--fx-muted);
+  --sim-dim: var(--fx-faint);
+  --sim-up: var(--fx-up);
+  --sim-down: var(--fx-down);
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  font-size: var(--fs-body);
+  line-height: 1.45;
+  background: var(--fx-ground);
+  color: var(--fx-text);
+}
+
+/* Screen titles are pixel type: names in the FINTIX world (titles, tickers, the city's tags) are the one job of the second face. */
+.sim .px {
+  font-size: round(down, 24px, var(--snap));
+  line-height: 1.15;
+  font-weight: 400;
+}
+
+.sim-main {
+  flex: 1;
+  width: min(100% - 2 * var(--gutter), 1440px);
+  margin: 0 auto;
+  padding: var(--sp-6) 0 var(--sp-10);
+}
+
+.sim-main[data-bleed] {
+  width: 100%;
+  padding: 0;
+}
+
+.sim-wait {
+  display: grid;
+  place-items: center;
+  min-height: calc(100svh - 160px);
+}
+
+.sim-glyph {
+  flex: none;
+  shape-rendering: crispEdges;
+}
+
+.sim [data-tone="up"] { color: var(--fx-up); }
+.sim [data-tone="down"] { color: var(--fx-down); }
+.sim [data-tone="flat"] { color: var(--fx-muted); }
+
+/* Every figure on these screens uses tabular digits, so columns align and live values never shift. */
+.sim-figure {
+  font-variant-numeric: tabular-nums;
+}
+
+/* A figure in Retropix: whole-pixel sizes, digits in equal cells, ₹ and − from the text face. */
+.sim-pixnum {
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  letter-spacing: var(--px-track);
+  white-space: nowrap;
+  -webkit-font-smoothing: none;
+}
+
+.sim-pixnum i {
+  display: inline-block;
+  width: 0.4542em;
+  font-style: normal;
+  text-align: center;
+}
+
+.sim-pixnum [data-sym] {
+  margin-right: 0.06em;
+  font-family: var(--font-text);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* A block's title: sentence case, ink, the size of a row's name. */
+.sim-title {
+  font-size: var(--fs-title);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--fx-text);
+}
+
+/* A label over a figure. Sentence case and grey: the figure is what is read. */
+.sim-label {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--fx-muted);
+}
+
+.sim-label small {
+  margin-left: var(--sp-1);
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--fx-faint);
+}
+
+.sim-note {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-label);
+  line-height: 1.5;
+  color: var(--fx-faint);
+}
+
+.sim-empty {
+  padding: var(--sp-4) 0 var(--sp-1);
+  color: var(--fx-muted);
+}
+
+/* Inline outcomes: inside the block they concern, never a page banner. */
+.sim-error,
+.sim-done {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding: var(--sp-3) var(--sp-3) var(--sp-3) 14px;
+  border-left: 2px solid var(--fx-down);
+  background: var(--fx-down-tint);
+  font-size: var(--fs-body);
+  line-height: 1.45;
+}
+
+.sim-done {
+  align-items: center;
+  border-left-color: var(--fx-up);
+  background: var(--fx-up-tint);
+}
+
+.sim-done .sim-glyph {
+  color: var(--fx-up);
+}
+
+/* A framed surface, for what is read as one instrument. */
+.sim-block {
+  padding: var(--sp-5);
+  border: 1px solid var(--fx-line);
+  background: var(--fx-panel);
+  transition: opacity var(--t-base) var(--ease-out);
+}
+
+/* Tutorial emphasis: the part Neo is talking about is outlined, the rest steps back. */
+.sim [data-focus="off"] {
+  opacity: 0.3;
+}
+
+.sim [data-focus="on"] {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--fx-buy-hi);
+  outline-offset: 4px;
+}
+
+/* ---- Controls --------------------------------------------------------- */
+
+/*
+ * A figure's label: small, uppercase and tracked, in the faint grey, always
+ * directly above or beside the figure it names. Never above a heading.
+ */
+.sim-cap {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fx-faint);
+}
+
+/* A region's name in the world's own letters: Retropix at its native size. */
+.sim-hud {
+  font-family: var(--font-pixel);
+  font-size: max(9.6px, round(12px, var(--snap)));
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: var(--px-track);
+  word-spacing: var(--px-word);
+  text-transform: uppercase;
+  color: var(--fx-text);
+}
+
+/*
+ * The primary action is a key: a flat fill standing on a darker edge. On
+ * press the face drops onto its edge (a transform, so nothing around it
+ * moves); release springs it back. Blue buys and confirms; purple sells.
+ */
+.sim-button {
+  --key: var(--fx-buy);
+  --key-hi: var(--fx-buy-hi);
+  --key-edge: var(--fx-buy-edge);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--fx-key-h);
+  padding: 0 var(--sp-5);
+  border: 0;
+  border-bottom: 3px solid var(--key-edge);
+  background: var(--key);
+  font-size: var(--fs-row);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--t-press) var(--ease-out),
+    background-color var(--t-quick) ease,
+    border-color var(--t-quick) ease,
+    color var(--t-quick) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-button:hover:not(:disabled) {
+    background: var(--key-hi);
+  }
+}
+
+.sim-button:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-color: var(--key);
+}
+
+.sim-button[data-tone="sell"] {
+  --key: var(--fx-sell);
+  --key-hi: var(--fx-sell-hi);
+  --key-edge: var(--fx-sell-edge);
+}
+
+/* Secondary: an outline, never competing with the key beside it. It presses 1px, as a lighter thing. */
+.sim-button[data-tone="quiet"],
+.sim-button[data-tone="sell-line"] {
+  border: 1px solid var(--fx-control);
+  background: transparent;
+  color: var(--fx-text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-button[data-tone="quiet"]:hover:not(:disabled) {
+    border-color: var(--fx-control-hi);
+    background: var(--fx-raised);
+  }
+
+  .sim-button[data-tone="sell-line"]:hover:not(:disabled) {
+    border-color: var(--fx-sell-hi);
+    background: #1a1240;
+    color: #fff;
+  }
+}
+
+.sim-button[data-tone="quiet"]:active:not(:disabled),
+.sim-button[data-tone="sell-line"]:active:not(:disabled) {
+  transform: translateY(1px);
+  border-bottom-color: var(--fx-control);
+  background: var(--fx-lift);
+}
+
+.sim-button[data-tone="sell-line"]:active:not(:disabled) {
+  border-bottom-color: var(--fx-sell);
+}
+
+/* Selling as a second choice: the sell colour as an outline. */
+.sim-button[data-tone="sell-line"] {
+  border-color: var(--fx-sell);
+  color: var(--fx-sell-text);
+}
+
+/* Small: tools in a header, beside no key. */
+.sim-button[data-size="s"] {
+  min-height: var(--fx-control-h);
+  padding: 0 var(--sp-4);
+  font-size: var(--fs-body);
+}
+
+/* Disabled stays legible: grey on a raised step, with the reason printed beside it. */
+.sim-button:disabled {
+  border-bottom-color: #090e2b;
+  background: var(--fx-lift);
+  color: var(--fx-faint);
+  cursor: not-allowed;
+}
+
+.sim-button[data-tone="quiet"]:disabled,
+.sim-button[data-tone="sell-line"]:disabled {
+  border-color: var(--fx-line);
+  background: transparent;
+  color: var(--fx-faint);
+}
+
+/* Working: three pixels step across, as long as the order is being placed. */
+.sim-busy {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.sim-busy i {
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  animation: sim-busy 600ms steps(1) infinite;
+}
+
+.sim-busy i:nth-child(2) { animation-delay: 200ms; }
+.sim-busy i:nth-child(3) { animation-delay: 400ms; }
+
+@keyframes sim-busy {
+  0% { opacity: 1; }
+  33% { opacity: 0.25; }
+}
+
+.sim-button[aria-busy="true"] {
+  cursor: progress;
+}
+
+/* Tertiary: words, for going somewhere. */
+.sim-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  font-size: var(--fs-label);
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--fx-muted);
+  cursor: pointer;
+  transition: color var(--t-quick) ease;
+}
+
+.sim-link .sim-glyph {
+  transition: transform var(--t-quick) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-link:hover {
+    color: var(--fx-text);
+  }
+
+  /* A link that goes somewhere nudges its arrow the way it goes. */
+  .sim-link[data-go]:hover .sim-glyph {
+    transform: translateX(2px);
+  }
+
+  .sim-link[data-go="back"]:hover .sim-glyph {
+    transform: translateX(-2px);
+  }
+}
+
+/* Focus is the accent ring, on every control, offset so it never touches the control's own edge. */
+.sim-button:focus-visible,
+.sim button:focus-visible,
+.sim a:focus-visible,
+.sim input:focus-visible,
+.sim [tabindex]:focus-visible {
+  outline: 2px solid var(--fx-accent);
+  outline-offset: 2px;
+}
+
+/*
+ * Choosing one of a few (candle size, range, movers): equal options, the
+ * chosen one marked by the accent line, the one selection mark on these
+ * screens. A single line slides between options (a transition, so quick
+ * changes retarget mid-way); it never grows or blinks in place.
+ */
+.sim-seg {
+  position: relative;
+  display: inline-grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+}
+
+.sim-seg button {
+  min-width: 36px;
+  min-height: 32px;
+  padding: 0 var(--sp-2);
+  border: 0;
+  background: none;
+  font-size: var(--fs-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--fx-muted);
+  cursor: pointer;
+  transition: color var(--t-quick) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-seg button:hover {
+    color: var(--fx-text);
+  }
+}
+
+.sim-seg button[aria-pressed="true"] {
+  color: var(--fx-text);
+}
+
+.sim-seg-mark {
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  height: 2px;
+  pointer-events: none;
+  transition: transform var(--t-base) var(--ease-out);
+}
+
+.sim-seg-mark::before {
+  content: "";
+  position: absolute;
+  inset: 0 var(--sp-2);
+  background: var(--fx-accent);
+}
+
+@media (pointer: coarse) {
+  .sim-seg button {
+    min-height: 40px;
+  }
+}
+
+/* ---- Neo -------------------------------------------------------------- */
+
+/* Every sprite is shown at one height, at its own proportions. */
+.sim-neo {
+  position: relative;
+  flex: none;
+  display: block;
+  height: calc(var(--neo-size) * var(--neo-scale, 1) * 1px);
+}
+
+.sim-neo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: sim-neo-in 260ms ease both;
+}
+
+@keyframes sim-neo-in {
+  from { opacity: 0; transform: translateY(4px); }
+}
+
+.sim-say {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-4);
+}
+
+.sim-say-box {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 6px var(--sp-6);
+  margin-bottom: var(--sp-2);
+  padding: var(--sp-4) var(--sp-5);
+  border-left: 2px solid var(--cyan);
+  background: var(--fx-raised);
+}
+
+.sim-say-name {
+  grid-column: 1 / -1;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--cyan);
+}
+
+.sim-say-text {
+  max-width: 72ch;
+  font-size: var(--fs-title);
+  line-height: 1.5;
+}
+
+.sim-say-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+}
+
+/* ---- Asset mark: its sector icon ---------------------------------------- */
+
+.sim-mark {
+  flex: none;
+  display: block;
+  shape-rendering: crispEdges;
+}
+
+/* ---- Charts ------------------------------------------------------------ */
+
+/* The chart is the surface: no frame, a few faint rungs, the candles, and its scale on the right. */
+.sim-chart {
+  margin: 0;
+}
+
+.sim-chart-box {
+  position: relative;
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+
+.sim-chart-box svg {
+  display: block;
+}
+
+.sim-chart-box:focus-visible {
+  outline: 2px solid var(--fx-accent);
+  outline-offset: 4px;
+}
+
+.sim-chart-rung {
+  stroke: var(--fx-rule);
+}
+
+.sim-chart-price,
+.sim-chart-time {
+  font-family: var(--font-text);
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  fill: var(--fx-faint);
+}
+
+/* A time label the crosshair's own tag would collide with steps aside. */
+.sim-chart-time[data-hidden] {
+  opacity: 0;
+}
+
+.sim-candle line {
+  stroke: var(--fx-down);
+  stroke-width: 1;
+}
+
+.sim-candle rect {
+  fill: var(--fx-down);
+}
+
+.sim-candle[data-up="true"] line {
+  stroke: var(--fx-up);
+}
+
+.sim-candle[data-up="true"] rect {
+  fill: var(--fx-up);
+}
+
+.sim-candle[data-dim="true"] {
+  opacity: 0.22;
+}
+
+/* While the crosshair reads one candle, the others step back a little. */
+.sim-chart[data-reading] .sim-candle:not([data-at]) {
+  opacity: 0.6;
+}
+
+.sim-chart-pick {
+  fill: rgba(42, 124, 246, 0.1);
+  stroke: var(--fx-buy-hi);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+/* The last close: the price an order is quoted at now. */
+.sim-chart-now {
+  stroke: var(--fx-text);
+  stroke-opacity: 0.45;
+  stroke-dasharray: 3 4;
+}
+
+.sim-chart-tag rect {
+  fill: var(--fx-text);
+}
+
+.sim-chart-tag text,
+.sim-chart-hair-tag text {
+  font-family: var(--font-text);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  fill: var(--ink);
+}
+
+/* The crosshair: dashed, quiet, with its price and time tagged on the axes. */
+.sim-chart-hair line {
+  stroke: var(--fx-muted);
+  stroke-opacity: 0.7;
+  stroke-dasharray: 2 3;
+}
+
+.sim-chart-hair-tag rect {
+  fill: var(--fx-lift);
+  stroke: var(--fx-control-hi);
+}
+
+.sim-chart-hair-tag text {
+  fill: var(--fx-text);
+}
+
+/* The legend line: the read candle's prices along the chart's top edge, never over a candle. */
+.sim-chart-legend {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 64px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 12px;
+  min-height: 22px;
+  font-size: var(--fs-meta);
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-faint);
+  pointer-events: none;
+}
+
+/* Each reading stays whole; on a narrow chart the line wraps into the taller band the chart reserves for it. */
+.sim-chart-legend > * {
+  white-space: nowrap;
+}
+
+.sim-chart-legend b {
+  font-weight: 600;
+  color: var(--fx-text);
+}
+
+.sim-chart-legend b[data-tone="up"] { color: var(--fx-up); }
+.sim-chart-legend b[data-tone="down"] { color: var(--fx-down); }
+.sim-chart-legend b[data-tone="flat"] { color: var(--fx-muted); }
+
+.sim-chart-when {
+  color: var(--fx-muted);
+}
+
+.sim-chart-empty {
+  display: grid;
+  place-items: center;
+  color: var(--fx-faint);
+}
+
+/* One large candle with its labels. */
+.sim-anatomy {
+  margin: 0;
+}
+
+.sim-anatomy svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 46svh;
+}
+
+.sim-anatomy-body {
+  fill: var(--fx-down);
+  transition: opacity 220ms ease;
+}
+
+.sim-anatomy-wick {
+  stroke: var(--fx-down);
+  stroke-width: 3;
+  transition: opacity 220ms ease;
+}
+
+.sim-anatomy[data-up="true"] .sim-anatomy-body {
+  fill: var(--fx-up);
+}
+
+.sim-anatomy[data-up="true"] .sim-anatomy-wick {
+  stroke: var(--fx-up);
+}
+
+.sim-anatomy [data-lit="false"] {
+  opacity: 0.18;
+}
+
+.sim-anatomy-label circle {
+  fill: var(--fx-text);
+}
+
+.sim-anatomy-label polyline {
+  fill: none;
+  stroke: var(--fx-muted);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+
+.sim-anatomy-label text {
+  font-size: 15px;
+  font-weight: 600;
+  fill: var(--fx-text);
+}
+
+.sim-anatomy-label .sim-anatomy-value {
+  font-size: var(--fs-body);
+  font-weight: 400;
+  fill: var(--fx-muted);
+}
+
+/* ---- Market list: open rows on the ground ---------------------------------- */
+
+.sim-watch-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-3) var(--sp-2);
+}
+
+.sim-watch-head small {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.sim-watch ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--fx-line);
+}
+
+.sim-watch li {
+  border-bottom: 1px solid var(--fx-rule);
+}
+
+.sim-watch button {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  min-height: var(--fx-row-h);
+  padding: 6px var(--sp-3);
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--t-quick) var(--ease-out);
+}
+
+/* The selected asset: a raised step and the gold line on its edge. */
+.sim-watch button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background: var(--fx-select);
+  transform: scaleY(0);
+  transition: transform var(--t-base) var(--ease-out);
+}
+
+.sim-watch button:hover {
+  background: var(--fx-panel);
+}
+
+.sim-watch button[aria-pressed="true"] {
+  background: var(--fx-raised);
+}
+
+.sim-watch button[aria-pressed="true"]::before {
+  transform: scaleY(1);
+}
+
+.sim-watch-name,
+.sim-watch-price {
+  display: grid;
+  min-width: 0;
+}
+
+.sim-watch-name b {
+  overflow: hidden;
+  font-size: var(--fs-row);
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sim-watch-name small,
+.sim-watch-price small {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.sim-watch-price {
+  justify-items: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-watch-price b {
+  font-size: var(--fs-row);
+  font-weight: 600;
+}
+
+.sim-watch-price small[data-tone] {
+  font-size: var(--fs-label);
+}
+
+.sim-watch-price small[data-tone="up"] { color: var(--fx-up); }
+.sim-watch-price small[data-tone="down"] { color: var(--fx-down); }
+
+/* ---- Asset identity (shared by Home and the floor) --------------------------- */
+
+/* Its tower, its name in the world's letters, its ticker plate and sector; then the price, the largest figure in the block. */
+.sim-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-3);
+}
+
+.sim-heading-name h1,
+.sim-heading-name h2 {
+  font-size: round(down, 24px, var(--snap));
+  line-height: 1.1;
+  color: var(--fx-text);
+}
+
+.sim-heading-name p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px var(--sp-2);
+  margin-top: var(--sp-1);
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+/* Ownership in gold: a pixel and the count. */
+.sim-heading-own {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fx-muted);
+}
+
+.sim-heading-own i {
+  width: 6px;
+  height: 6px;
+  background: var(--fx-own);
+}
+
+/* A ticker is a nameplate: pixel letters on a raised step, like the sign on its building. */
+.sim-ticker {
+  display: inline-block;
+  padding: 3px 5px 2px;
+  background: var(--fx-lift);
+  font-family: var(--font-pixel);
+  /* Nearest grid step (not up): at a 1.25 pixel ratio rounding up would double it. */
+  font-size: max(9.6px, round(12px, var(--snap)));
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: var(--px-track);
+  color: var(--fx-muted);
+}
+
+.sim-heading-price {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--sp-3);
+  margin-top: var(--sp-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-heading-price b {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.sim-heading-price span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.sim-heading-price small {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--fx-faint);
+}
+
+/* On the floor the asset is the screen's subject: its name at 3× the pixel grid, the price beside it at 40px. */
+.sim-heading[data-size="l"] .sim-heading-name h2,
+.sim-heading[data-size="l"] .sim-heading-name h1 {
+  font-size: round(down, 36px, var(--snap));
+}
+
+.sim-heading[data-size="l"] .sim-heading-price {
+  grid-column: 3;
+  grid-row: 1;
+  justify-content: flex-end;
+  margin-top: 0;
+  text-align: right;
+}
+
+.sim-heading[data-size="l"] .sim-heading-price b {
+  font-size: 40px;
+}
+
+.sim-heading[data-size="l"] .sim-heading-price span {
+  font-size: var(--fs-row);
+}
+
+@media (max-width: 640px) {
+  .sim-heading[data-size="l"] .sim-heading-name h2,
+  .sim-heading[data-size="l"] .sim-heading-name h1 {
+    font-size: round(down, 24px, var(--snap));
+  }
+
+  .sim-heading[data-size="l"] .sim-heading-price {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    justify-content: flex-start;
+    margin-top: var(--sp-2);
+  }
+
+  .sim-heading[data-size="l"] .sim-heading-price b {
+    font-size: 32px;
+  }
+}
+
+/* ---- One position's figures: label over value, in columns -------------------- */
+
+.sim-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(124px, 100%), 1fr));
+  gap: var(--sp-3) var(--sp-5);
+  margin: 0;
+}
+
+.sim-facts dt {
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+.sim-facts dd {
+  margin: 2px 0 0;
+  font-size: var(--fs-title);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-facts dd small {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+/* ---- Asset view: the chart, the instrument ----------------------------------- */
+
+.sim-asset {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-4);
+}
+
+/* The desk puts the position straight under the price it is measured against: one compact row of figures on a rule. */
+.sim-asset-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-3);
+}
+
+.sim-asset-top > .desk-position {
+  padding-top: var(--sp-3);
+}
+
+/* The figures name themselves ("Shares held", "Holding value"); the block's title stays for screen readers. */
+.sim-asset-top .desk-position .sim-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.sim-asset-top .desk-position .sim-note {
+  margin: 0;
+}
+
+.sim-asset-top .sim-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-6);
+}
+
+.sim-asset-top .sim-facts dd {
+  font-size: var(--fs-row);
+  white-space: nowrap;
+}
+
+.sim-asset-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--fx-rule);
+}
+
+.sim-asset-bar .sim-note {
+  margin: 0;
+}
+
+/* ---- Order ticket: the console ------------------------------------------------ */
+
+.sim-ticket {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-4);
+}
+
+/* Buy or sell: two words on one rule, the chosen side underlined in its own colour, which the final key carries too. */
+.sim-sides {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--fx-line);
+}
+
+.sim-sides button {
+  position: relative;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  font-size: var(--fs-row);
+  font-weight: 600;
+  color: var(--fx-muted);
+  cursor: pointer;
+  transition:
+    color var(--t-quick) var(--ease-out),
+    background-color var(--t-quick) var(--ease-out);
+}
+
+.sim-sides button::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: transparent;
+  transition: background-color var(--t-base) var(--ease-out);
+}
+
+.sim-sides button:hover:not(:disabled) {
+  color: var(--fx-text);
+  background: var(--fx-lift);
+}
+
+.sim-sides button[aria-pressed="true"] {
+  color: var(--fx-text);
+}
+
+.sim-sides button[aria-pressed="true"][data-side="buy"]::after {
+  background: var(--fx-buy-hi);
+}
+
+.sim-sides button[aria-pressed="true"][data-side="sell"]::after {
+  background: var(--fx-sell-hi);
+}
+
+.sim-sides button:disabled {
+  color: var(--fx-faint);
+  cursor: not-allowed;
+}
+
+.sim-why {
+  margin-top: calc(-1 * var(--sp-2));
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.sim-ticket-row {
+  padding: 10px var(--sp-3);
+  margin: 0 calc(-1 * var(--sp-3));
+}
+
+.sim-ticket-asset {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.sim-ticket-asset p {
+  display: grid;
+}
+
+.sim-ticket-asset p:first-of-type {
+  flex: 1;
+  min-width: 0;
+}
+
+.sim-ticket-asset b {
+  font-size: var(--fs-row);
+  font-weight: 600;
+}
+
+.sim-ticket-asset small {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.sim-ticket-price {
+  justify-items: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-ticket-price b {
+  font-size: 18px;
+}
+
+.sim-qty-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+
+.sim-qty-head label {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--fx-muted);
+}
+
+/* "Max 283": a compact outlined control, the size of the label it sits beside. */
+.sim-qty-max {
+  min-height: 26px;
+  padding: 0 var(--sp-2);
+  border: 1px solid var(--fx-control);
+  background: none;
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-muted);
+  cursor: pointer;
+  transition:
+    border-color var(--t-quick) var(--ease-out),
+    color var(--t-quick) var(--ease-out);
+}
+
+.sim-qty-max:hover {
+  border-color: var(--fx-control-hi);
+  color: var(--fx-text);
+}
+
+/* The quantity well: sunk below the console, the number large and centred, steppers inside its ends. */
+.sim-qty-box {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  height: 56px;
+  border: 1px solid var(--fx-control);
+  background: var(--fx-sunk);
+  transition:
+    border-color var(--t-quick) var(--ease-out),
+    outline-color var(--t-quick) var(--ease-out);
+  outline: 1px solid transparent;
+}
+
+.sim-qty-box button {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  color: var(--fx-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--t-quick) var(--ease-out),
+    color var(--t-quick) var(--ease-out);
+}
+
+.sim-qty-box button:hover:not(:disabled) {
+  background: var(--fx-panel);
+  color: var(--fx-text);
+}
+
+.sim-qty-box button:active:not(:disabled) {
+  background: var(--fx-raised);
+}
+
+.sim-qty-box button:disabled {
+  color: var(--fx-line);
+  cursor: not-allowed;
+}
+
+.sim-qty-box input {
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--fx-text);
+}
+
+.sim-qty-box input::placeholder {
+  color: var(--fx-faint);
+}
+
+/* The well shows focus as a whole: a cyan ring two pixels deep. */
+.sim-qty-box input:focus-visible {
+  outline: none;
+}
+
+.sim-qty-box:focus-within {
+  border-color: var(--cyan);
+  outline-color: var(--cyan);
+}
+
+.sim-qty-box[data-error="true"] {
+  border-color: var(--fx-down);
+  outline-color: var(--fx-down);
+}
+
+.sim-qty-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: var(--sp-2);
+  font-size: var(--fs-label);
+  line-height: 1.45;
+  color: var(--fx-faint);
+}
+
+.sim-qty-help .sim-glyph {
+  margin-top: 2px;
+}
+
+.sim-qty-help[data-error="true"] {
+  color: var(--fx-down);
+}
+
+/* Estimates: label left, figure right, on a rule. */
+.sim-ticket-line {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 2px var(--sp-3);
+  border-top: 1px solid var(--fx-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-ticket-line span {
+  color: var(--fx-muted);
+}
+
+.sim-ticket-line b {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.sim-ticket-line[data-lead] b {
+  font-size: var(--fs-figure);
+}
+
+/* A figure not known yet is a quiet dash at text size, never a large one that reads as loading. */
+.sim-ticket-line .sim-dash,
+.sim-ticket-line[data-lead] .sim-dash {
+  font-size: var(--fs-body);
+  font-weight: 400;
+  color: var(--fx-faint);
+}
+
+.sim-ticket-line small {
+  grid-column: 1 / -1;
+  justify-self: end;
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.sim-ticket-line .sim-ticket-after {
+  color: var(--fx-muted);
+}
+
+.sim-ticket > .sim-button {
+  width: 100%;
+  min-height: 50px;
+}
+
+.sim-ticket > .sim-why {
+  margin-top: calc(-1 * var(--sp-2));
+}
+
+.sim-ticket > .sim-button:active:not(:disabled) {
+  min-height: 48px;
+}
+
+/* Buy and sell are told apart by a rule along the console's top and by the key, not by a page of colour. */
+.sim-ticket[data-side],
+.sim-review[data-side],
+.sim-receipt[data-side] {
+  border-top: 2px solid var(--fx-buy-hi);
+}
+
+.sim-ticket[data-side="sell"],
+.sim-review[data-side="sell"],
+.sim-receipt[data-side="sell"] {
+  border-top-color: var(--fx-sell-hi);
+}
+
+/* ---- Review ----------------------------------------------------------------- */
+
+.sim-review,
+.sim-receipt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+}
+
+.sim-review-lead {
+  display: grid;
+  gap: 2px;
+  margin: var(--sp-3) 0 var(--sp-4);
+  font-size: var(--fs-label);
+  color: var(--fx-muted);
+}
+
+.sim-review-lead b {
+  font-size: var(--fs-figure);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--fx-text);
+}
+
+.sim-review-lead .sim-ticker {
+  margin-left: var(--sp-1);
+  vertical-align: 3px;
+}
+
+.sim-review-lines {
+  margin: 0;
+  border-bottom: 1px solid var(--fx-rule);
+}
+
+.sim-review-lines div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: 10px 0;
+  border-top: 1px solid var(--fx-rule);
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-review-lines dt {
+  color: var(--fx-muted);
+}
+
+.sim-review-lines dd {
+  margin: 0;
+  font-weight: 500;
+  text-align: right;
+}
+
+.sim-review-total {
+  border-top-color: var(--fx-line) !important;
+}
+
+.sim-review-total dd {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.sim-change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.sim-change span,
+.sim-change .sim-glyph {
+  color: var(--fx-faint);
+}
+
+.sim-change b {
+  font-weight: 600;
+}
+
+.sim-review-actions {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+.sim-review[aria-busy="true"] .sim-review-lines {
+  opacity: 0.6;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+
+/* ---- Receipt and lesson links ----------------------------------------- */
+
+.sim-receipt-lead {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 var(--sp-4);
+}
+
+.sim-receipt-lead b {
+  font-size: var(--fs-figure);
+  font-weight: 600;
+}
+
+.sim-receipt-lead .sim-glyph {
+  color: var(--fx-up);
+}
+
+.sim-receipt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+.sim-receipt-actions > * {
+  flex: 1 1 auto;
+}
+
+/* The receipt arrives once, as the consequence of the fill. */
+.sim-receipt {
+  animation: sim-arrive var(--t-base) var(--ease-out);
+}
+
+@keyframes sim-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.sim-lesson {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  font-size: var(--fs-label);
+  color: var(--fx-buy-text);
+  transition: color var(--t-quick) var(--ease-out);
+}
+
+.sim-lesson span {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid currentColor;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sim-lesson:hover {
+  color: var(--fx-text);
+}
+
+/* A figure that a trade has just changed lights once, so the eye finds the consequence. */
+[data-flash] {
+  animation: sim-flash var(--t-event) var(--ease-out);
+}
+
+@keyframes sim-flash {
+  from {
+    background-color: rgba(47, 192, 255, 0.2);
+  }
+}
+
+/* ---- Portfolio ------------------------------------------------------------------ */
+
+/* Cards (the tutorial, where each figure is explained): one container split by hairlines. */
+.sim-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: 1px;
+  border: 1px solid var(--fx-line);
+  background: var(--fx-line);
+}
+
+.sim-summary-cell {
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--fx-panel);
+}
+
+.sim-summary-value {
+  margin-top: var(--sp-1);
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-summary-note {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+/* The strip (the desk): figures straight on the ground between rules, the total leading. */
+.sim-summary[data-variant="strip"] {
+  grid-template-columns: 1.35fr repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border: 0;
+  border-block: 1px solid var(--fx-line);
+  background: none;
+}
+
+.sim-summary[data-variant="strip"] .sim-summary-cell {
+  padding: var(--sp-3) var(--sp-5) var(--sp-3) 0;
+  background: none;
+}
+
+.sim-summary[data-variant="strip"] .sim-summary-cell + .sim-summary-cell {
+  padding-left: var(--sp-5);
+  border-left: 1px solid var(--fx-rule);
+}
+
+.sim-summary[data-variant="strip"] .sim-summary-value {
+  margin-top: 2px;
+  font-size: 18px;
+}
+
+.sim-summary[data-variant="strip"] .sim-summary-cell:first-child .sim-summary-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.sim-summary[data-variant="strip"] .sim-summary-note {
+  display: none;
+}
+
+/* Holdings: a table of rules and alignment. */
+.sim-table-wrap {
+  margin-top: var(--sp-3);
+  overflow-x: auto;
+}
+
+.sim-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-table th,
+.sim-table td {
+  height: 48px;
+  padding: 0 var(--sp-3);
+  border-top: 1px solid var(--fx-rule);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sim-table thead th {
+  height: 36px;
+  border-top: 0;
+  border-bottom: 1px solid var(--fx-line);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  color: var(--fx-faint);
+}
+
+.sim-table th:first-child {
+  padding-left: 0;
+  text-align: left;
+}
+
+.sim-table td:last-child,
+.sim-table th:last-child {
+  padding-right: 0;
+}
+
+.sim-table tbody th button,
+.sim-table tbody th span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--fs-row);
+  font-weight: 600;
+  color: var(--fx-text);
+}
+
+.sim-table tbody th button {
+  cursor: pointer;
+}
+
+.sim-table tbody th button:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sim-table small {
+  color: inherit;
+  opacity: 0.8;
+}
+
+.sim-table-name {
+  display: grid;
+  text-align: left;
+}
+
+.sim-table-name small {
+  display: none;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--fx-faint);
+  opacity: 1;
+}
+
+.sim-trades ul,
+.sim-news ul {
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sim-trades li {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--fx-row-h);
+  padding: 6px 0;
+  border-top: 1px solid var(--fx-rule);
+}
+
+/* Bought or sold: a pale tag of the side's colour, the one status mark on the row. */
+.sim-trade-side {
+  justify-self: start;
+  padding: 3px var(--sp-2);
+  background: #0f2350;
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  white-space: nowrap;
+  color: #a8c8ff;
+}
+
+.sim-trade-side[data-side="sell"] {
+  background: #23174d;
+  color: #d0bbff;
+}
+
+.sim-trade-what,
+.sim-trade-total {
+  display: grid;
+}
+
+.sim-trade-what small,
+.sim-trade-total small {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.sim-trade-total {
+  justify-items: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-trade-total small[data-tone="up"] { color: var(--fx-up); }
+.sim-trade-total small[data-tone="down"] { color: var(--fx-down); }
+
+.sim-news li {
+  border-top: 1px solid var(--fx-rule);
+}
+
+.sim-news button {
+  display: grid;
+  grid-template-columns: 136px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: var(--fx-row-h);
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sim-news button:disabled {
+  cursor: default;
+}
+
+.sim-news button:not(:disabled):hover .sim-news-text {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sim-news-when {
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-faint);
+}
+
+.sim-news-asset {
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+
+/* ---- Tutorial ------------------------------------------------------------------- */
+
+/* The step or context above a tutorial title: a quiet line, not a shouted label. */
+.tut-kicker {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--cyan);
+}
+
+.tut-skip {
+  padding: var(--sp-2) var(--sp-1);
+  border: 0;
+  background: none;
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.tut-skip:hover {
+  color: var(--fx-text);
+}
+
+/* The opening scene: the supplied room fills the screen; Neo is already in it, at his desk. */
+.tut-intro {
+  position: relative;
+  height: calc(100svh - 60px);
+  min-height: 520px;
+  overflow: clip;
+}
+
+.tut-intro-art {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, max(520px, 100svh - 60px) * 1672 / 941);
+  aspect-ratio: 1672 / 941;
+  transform: translate(-50%, -50%);
+}
+
+.tut-intro-art > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+}
+
+/* Over the window, to the right of Neo: the open sky is the scene's quiet space. */
+.tut-intro-card {
+  position: absolute;
+  top: 13%;
+  left: 57.5%;
+  width: 28.5%;
+  min-width: 340px;
+  display: grid;
+  gap: 14px;
+  padding: 26px 28px;
+  border: 1px solid var(--fx-control);
+  background: rgba(5, 9, 34, 0.94);
+  font-size: var(--fs-title);
+  line-height: 1.55;
+}
+
+.tut-intro-card h1 {
+  color: var(--fx-text);
+}
+
+.tut-intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: 6px;
+}
+
+.tut {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 22px;
+  min-height: calc(100svh - 60px - 64px);
+}
+
+.tut-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4) 28px;
+}
+
+.tut-head > div {
+  flex: 1;
+  min-width: 240px;
+}
+
+.tut-dots {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tut-dots li {
+  width: 18px;
+  height: 6px;
+  background: var(--fx-lift);
+}
+
+.tut-dots li[data-state="done"] {
+  background: var(--fx-buy-hi);
+}
+
+.tut-dots li[data-state="now"] {
+  background: var(--cyan);
+}
+
+.tut-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  place-items: center;
+  align-content: center;
+}
+
+.tut-panel {
+  padding: 22px var(--sp-6);
+  border: 1px solid var(--fx-line);
+  background: var(--fx-panel);
+}
+
+.tut-wide {
+  width: min(100%, 980px);
+}
+
+.tut-candle {
+  width: min(100%, 460px);
+}
+
+.tut-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-5);
+  width: min(100%, 880px);
+}
+
+.tut-pair-title {
+  margin-top: var(--sp-1);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.tut-check {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--sp-5);
+  width: min(100%, 1180px);
+}
+
+.tut-check .tut-wide {
+  width: auto;
+}
+
+.tut-quiz {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.tut-quiz-q {
+  font-size: var(--fs-title);
+  font-weight: 600;
+}
+
+.tut-quiz-options {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.tut-quiz-options button {
+  min-height: var(--fx-key-h);
+  padding: 0 14px;
+  border: 1px solid var(--fx-control);
+  background: transparent;
+  font-size: var(--fs-row);
+  text-align: left;
+  color: var(--fx-text);
+  cursor: pointer;
+  transition:
+    background-color var(--t-quick) var(--ease-out),
+    border-color var(--t-quick) var(--ease-out);
+}
+
+.tut-quiz-options button:hover:not(:disabled) {
+  border-color: var(--fx-control-hi);
+  background: var(--fx-raised);
+}
+
+.tut-quiz-options button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.tut-quiz-options button[data-correct="true"] {
+  border-color: var(--fx-up);
+  background: var(--fx-up-tint);
+  opacity: 1;
+}
+
+.tut-quiz-hint {
+  padding-top: 10px;
+  border-top: 1px solid var(--fx-line);
+}
+
+.tut-market {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--sp-5);
+  width: 100%;
+}
+
+.tut-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+  color: var(--fx-muted);
+}
+
+.tut-narrow {
+  width: min(100%, 480px);
+}
+
+.tut-result {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.tut-result .sim-review-lines {
+  width: 100%;
+  text-align: left;
+}
+
+.tut-result-mark {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  background: var(--fx-up);
+  color: #04140d;
+}
+
+.tut-portfolio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-4);
+  width: 100%;
+}
+
+/* ---- Level picker ----------------------------------------------------------------- */
+
+.lvl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-8);
+  padding-top: var(--sp-3);
+  animation: sim-route-in var(--t-panel) var(--ease-out);
+}
+
+.lvl-head {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-5);
+}
+
+.lvl-head > div {
+  display: grid;
+  gap: var(--sp-2);
+  max-width: 60ch;
+  padding-bottom: var(--sp-3);
+  color: var(--fx-muted);
+}
+
+.lvl-head h1 {
+  color: var(--fx-text);
+}
+
+.lvl-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lvl-card {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 10px;
+  min-height: 240px;
+  padding: var(--sp-6);
+  border: 1px solid var(--fx-line);
+  background: var(--fx-panel);
+}
+
+.lvl-card[data-state="open"] {
+  border-top: 2px solid var(--fx-buy-hi);
+}
+
+.lvl-card[data-state="locked"] h2,
+.lvl-card[data-state="locked"] .lvl-number {
+  color: var(--fx-faint);
+}
+
+.lvl-number {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--cyan);
+}
+
+.lvl-note {
+  color: var(--fx-muted);
+}
+
+.lvl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lvl-lock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-body);
+  color: var(--fx-faint);
+}
+
+/* ---- Trading floor ----------------------------------------------------------------- */
+
+/*
+ * The floor reads top to bottom as the trade does: the market's skyline
+ * (choose), the asset and its chart (read the movement), the ticket beside
+ * it (decide, see the consequence, confirm), the position under the chart
+ * and the fills below (the result). The chart is the largest thing; the
+ * ticket is the one contained surface. Grid at 1440: 1fr + 24 + 380.
+ */
+.desk {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-4);
+  animation: sim-route-in var(--t-panel) var(--ease-out);
+}
+
+/* Arriving from another screen: a short rise and fade, so moving between Home and the floor never teleports. */
+@keyframes sim-route-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.desk-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-8);
+}
+
+.desk-title {
+  display: grid;
+  gap: var(--sp-1);
+  margin-right: auto;
+}
+
+.desk-title p {
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+/* The account, read at a glance: three figures in a row, label over value. */
+.desk-account {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-8);
+  margin: 0;
+}
+
+.desk-account dd {
+  margin: 2px 0 0;
+  font-size: var(--fs-row);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.desk-account dd small {
+  font-size: var(--fs-meta);
+  font-weight: 500;
+}
+
+.desk-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.desk-help-list {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding-left: var(--sp-5);
+  font-size: var(--fs-body);
+}
+
+/* The market's skyline: eight towers in a row, the chosen one marked by the accent line on its foot. */
+.sim-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  border-top: 1px solid var(--fx-rule);
+  border-bottom: 1px solid var(--fx-line);
+}
+
+.sim-switch button {
+  position: relative;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  min-height: 52px;
+  padding: var(--sp-2) var(--sp-3);
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--t-quick) ease;
+}
+
+.sim-switch button + button {
+  border-left: 1px solid var(--fx-rule);
+}
+
+/* The accent line: one element, a cell wide, sliding to the chosen tower (a transition, so quick choices retarget). */
+.sim-switch-mark {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: calc(100% / 8);
+  height: 2px;
+  pointer-events: none;
+  transition: transform var(--t-base) var(--ease-out);
+}
+
+.sim-switch-mark::before {
+  content: "";
+  position: absolute;
+  inset: 0 var(--sp-3);
+  background: var(--fx-accent);
+}
+
+.sim-switch[data-instant] .sim-switch-mark {
+  transition: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-switch button:hover {
+    background: var(--fx-panel);
+  }
+}
+
+.sim-switch button[aria-selected="true"],
+.sim-switch button:active {
+  background: var(--fx-panel);
+}
+
+/* Every mark but the chosen one is quiet: the switcher lights where the eye should go. */
+.sim-switch .sim-mark {
+  opacity: 0.55;
+  transition: opacity var(--t-quick) ease;
+}
+
+.sim-switch button[aria-selected="true"] .sim-mark,
+.sim-switch button:hover .sim-mark {
+  opacity: 1;
+}
+
+.sim-switch-id,
+.sim-switch-price {
+  display: grid;
+  min-width: 0;
+}
+
+.sim-switch-id small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow: hidden;
+  font-size: var(--fs-meta);
+  white-space: nowrap;
+  color: var(--fx-faint);
+}
+
+.sim-own {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--fx-own);
+}
+
+.sim-switch-price {
+  justify-items: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-switch-price b {
+  font-size: var(--fs-label);
+  font-weight: 600;
+}
+
+.sim-switch-price small {
+  font-size: var(--fs-meta);
+  font-weight: 500;
+}
+
+/* The floor: the chosen asset and its chart, and the ticket beside them. */
+/* Left: the asset, its chart and position, then the fills and holdings. Right: the ticket, held in view down the whole column. */
+.desk-floor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  gap: var(--sp-6);
+}
+
+.desk-floor > .desk-main {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.desk-floor > .desk-ticket {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.desk-floor > .desk-lower {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.desk-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+/* A click on the skyline crossfades the new asset in; a keyboard step swaps it at once. */
+.desk-main[data-swap] {
+  animation: desk-swap 180ms var(--ease-out);
+}
+
+@keyframes desk-swap {
+  from {
+    opacity: 0.35;
+    filter: blur(2px);
+  }
+}
+
+.desk-chart {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-1);
+}
+
+.desk-chart-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-4);
+}
+
+.desk-chart-bar p {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--fx-muted);
+}
+
+.desk-chart-bar p span {
+  font-weight: 400;
+  color: var(--fx-faint);
+}
+
+/* The position, under the chart it is measured against: one row of figures on a rule. */
+.desk-position {
+  display: grid;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--fx-line);
+}
+
+.desk-position dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-8);
+  margin: 0;
+}
+
+.desk-position dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.desk-position dd {
+  margin: 2px 0 0;
+  font-size: var(--fs-row);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.desk-position dd small {
+  font-size: var(--fs-meta);
+  font-weight: 500;
+}
+
+.desk-position-none {
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+}
+
+/* The ticket: the one contained surface on the floor, held in view while the page scrolls. */
+.desk-ticket {
+  position: sticky;
+  top: calc(60px + var(--sp-4));
+}
+
+.desk-lower {
+  display: grid;
+  gap: var(--sp-4);
+  margin-top: var(--sp-2);
+}
+
+.desk-tabs {
+  display: flex;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  border-bottom: 1px solid var(--fx-line);
+  scrollbar-width: none;
+}
+
+.desk-tabs button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding: 0 var(--sp-3);
+  border: 0;
+  background: none;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--fx-muted);
+  cursor: pointer;
+  transition: color var(--t-quick) ease;
+}
+
+.desk-tabs button::after {
+  content: "";
+  position: absolute;
+  right: var(--sp-3);
+  bottom: -1px;
+  left: var(--sp-3);
+  height: 2px;
+  background: var(--fx-accent);
+  transform: scaleX(0);
+  transition: transform var(--t-base) var(--ease-out);
+}
+
+.desk-tabs button[aria-selected="true"] {
+  color: var(--fx-text);
+}
+
+.desk-tabs button[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .desk-tabs button:hover {
+    color: var(--fx-text);
+  }
+}
+
+.desk-tabs small {
+  padding: 1px 6px;
+  background: var(--fx-lift);
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-muted);
+}
+
+/* The panels under the tabs sit on the ground: their own frames would repeat the tabs' rule. */
+.desk-lower .sim-block {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.desk-lower .sim-block > .sim-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* A fill made on this visit arrives once, lit, at the top of the list. */
+.sim-trades li[data-fresh] {
+  animation: desk-arrive var(--t-panel) var(--ease-out);
+}
+
+@keyframes desk-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+    background-color: rgba(42, 124, 246, 0.18);
+  }
+}
+
+/* ---- The order ticket ------------------------------------------------------------- */
+
+.sim-order {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  border: 1px solid var(--fx-line);
+  border-top: 2px solid var(--fx-buy-hi);
+  background: var(--fx-panel);
+  transition: border-color var(--t-base) ease;
+}
+
+.sim-order[data-side="sell"] {
+  border-top-color: var(--fx-sell-hi);
+}
+
+.sim-order-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-1) var(--sp-3);
+}
+
+.sim-order-head p {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.sim-order-why {
+  margin-top: calc(-1 * var(--sp-2));
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+/* Buy or Sell: one track, an indicator that slides to the chosen side in its own calm tone. */
+.sim-sideswitch {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid var(--fx-control);
+  background: var(--fx-sunk);
+}
+
+.sim-sideswitch button {
+  position: relative;
+  z-index: 1;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  font-size: var(--fs-row);
+  font-weight: 600;
+  color: var(--fx-muted);
+  cursor: pointer;
+  transition: color var(--t-quick) ease;
+}
+
+.sim-sideswitch button[aria-checked="true"] {
+  color: #fff;
+}
+
+.sim-sideswitch button:disabled {
+  color: var(--fx-faint);
+  cursor: not-allowed;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-sideswitch button:not(:disabled):hover {
+    color: var(--fx-text);
+  }
+}
+
+.sim-sideswitch-mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  border-bottom: 2px solid var(--fx-buy-hi);
+  background: #0f2a5c;
+  transition:
+    transform var(--t-base) var(--ease-out),
+    background-color var(--t-base) ease,
+    border-color var(--t-base) ease;
+}
+
+.sim-sideswitch[data-side="sell"] .sim-sideswitch-mark {
+  border-bottom-color: var(--fx-sell-hi);
+  background: #25174f;
+}
+
+/* Quantity: the well with steppers at its ends, quick fills under it, and the reason when it can't be placed. */
+.sim-qty2 {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.sim-qty2-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-3);
+}
+
+.sim-qty2-head span {
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-faint);
+}
+
+.sim-qty2-box {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  height: 48px;
+  border: 1px solid var(--fx-control);
+  background: var(--fx-sunk);
+  transition: border-color var(--t-quick) ease;
+}
+
+.sim-qty2-box:focus-within {
+  border-color: var(--fx-accent);
+  outline: 1px solid var(--fx-accent);
+}
+
+.sim-qty2-box[data-error] {
+  border-color: var(--fx-down);
+  outline: 1px solid var(--fx-down);
+}
+
+.sim-qty2-box input {
+  min-width: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--fx-text);
+}
+
+.sim-qty2-box input:focus-visible {
+  outline: none;
+}
+
+.sim-qty2-box input::placeholder {
+  color: var(--fx-faint);
+}
+
+.sim-qty2-box button {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  color: var(--fx-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--t-quick) ease,
+    color var(--t-quick) ease;
+}
+
+.sim-qty2-box button .sim-glyph {
+  transition: transform var(--t-press) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-qty2-box button:not(:disabled):hover {
+    background: var(--fx-panel);
+    color: var(--fx-text);
+  }
+}
+
+.sim-qty2-box button:not(:disabled):active .sim-glyph {
+  transform: scale(0.85);
+}
+
+.sim-qty2-box button:disabled {
+  color: var(--fx-line);
+  cursor: not-allowed;
+}
+
+.sim-qty2-fill {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+
+.sim-qty2-fill button {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  border: 1px solid var(--fx-line);
+  background: none;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--fx-text);
+  cursor: pointer;
+  transition:
+    border-color var(--t-quick) ease,
+    background-color var(--t-quick) ease,
+    transform var(--t-press) var(--ease-out);
+}
+
+.sim-qty2-fill button small {
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-faint);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-qty2-fill button:not(:disabled):hover {
+    border-color: var(--fx-control-hi);
+  }
+}
+
+.sim-qty2-fill button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+.sim-qty2-fill button[aria-pressed="true"] {
+  border-color: var(--fx-accent);
+  background: #0c1d44;
+}
+
+.sim-qty2-fill button:disabled {
+  color: var(--fx-faint);
+  cursor: not-allowed;
+}
+
+.sim-qty2-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 0;
+  font-size: var(--fs-label);
+  color: var(--fx-down);
+}
+
+.sim-qty2-help:empty {
+  display: none;
+}
+
+.sim-qty2-help .sim-glyph {
+  margin-top: 3px;
+}
+
+/* What the order does, before it is placed: each line before → after, the cost leading. */
+.sim-order-lines {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--fx-rule);
+}
+
+.sim-order-lines > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-3);
+  padding: 7px 0;
+  border-bottom: 1px solid var(--fx-rule);
+}
+
+.sim-order-lines dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 2px var(--sp-2);
+  margin: 0;
+  font-size: var(--fs-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.sim-order-lines dd b {
+  font-weight: 600;
+}
+
+.sim-order-lines .sim-dash {
+  font-weight: 400;
+  color: var(--fx-faint);
+}
+
+.sim-order-lines dd small {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.sim-order-lines [data-lead] dd b {
+  font-size: var(--fs-figure);
+}
+
+.sim-order-lines [data-lead] dd {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.sim-order-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sim-order-change > span {
+  color: var(--fx-muted);
+}
+
+.sim-order-change .sim-glyph {
+  color: var(--fx-faint);
+}
+
+/* The city after the order: the holdings as the city draws them, the traded tower in its colour, its old height outlined. */
+.sim-order-impact {
+  align-items: center;
+}
+
+.sim-order-impact dd {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-2);
+}
+
+.sim-order-city line {
+  stroke: var(--fx-line);
+}
+
+.sim-order-city rect {
+  fill: var(--fx-lift);
+}
+
+.sim-order-city-before {
+  fill: none !important;
+  stroke: var(--fx-text);
+  stroke-opacity: 0.55;
+  stroke-dasharray: 2 2;
+}
+
+.sim-order-empty {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+/* A note at the moment of decision: beside the button it concerns, dismissible, with its lesson. */
+.sim-order-note {
+  position: relative;
+  display: grid;
+  gap: var(--sp-1);
+  padding: var(--sp-3) var(--sp-8) var(--sp-3) var(--sp-3);
+  border-left: 2px solid var(--fx-own);
+  background: var(--fx-raised);
+  font-size: var(--fs-label);
+  line-height: 1.45;
+  animation: sim-note-in 200ms var(--ease-out);
+}
+
+@keyframes sim-note-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.sim-order-note .sim-lesson {
+  margin-top: 0;
+}
+
+.sim-explain-close {
+  position: absolute;
+  top: var(--sp-2);
+  right: var(--sp-2);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  color: var(--fx-muted);
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-explain-close:hover {
+    color: var(--fx-text);
+  }
+}
+
+.sim-order-go {
+  width: 100%;
+}
+
+/* "?" beside a figure, and the note it opens under the row. */
+.sim-explain {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin: -4px 0;
+  border: 1px solid var(--fx-line);
+  background: none;
+  font-size: var(--fs-meta);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--fx-muted);
+  cursor: pointer;
+  transition:
+    border-color var(--t-quick) ease,
+    color var(--t-quick) ease;
+}
+
+.sim-explain[aria-expanded="true"] {
+  border-color: var(--fx-accent);
+  color: var(--fx-text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sim-explain:hover {
+    border-color: var(--fx-control-hi);
+    color: var(--fx-text);
+  }
+}
+
+.sim-explain-note {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: var(--sp-1);
+  max-width: 64ch;
+  padding: var(--sp-3) var(--sp-8) var(--sp-3) var(--sp-3);
+  border-left: 2px solid var(--fx-accent);
+  background: var(--fx-raised);
+  font-size: var(--fs-label);
+  line-height: 1.5;
+  animation: sim-note-in 180ms var(--ease-out);
+}
+
+/* ---- Smaller screens --------------------------------------------------------------- */
+
+
+/* The skyline scrolls sideways inside its own row once eight cells no longer fit; the page never does. */
+@media (max-width: 1240px) {
+  .sim-switch {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .sim-switch button {
+    flex: 0 0 158px;
+    scroll-snap-align: start;
+  }
+
+  .sim-switch-mark {
+    width: 158px;
+  }
+}
+
+/* A narrower ticket keeps its place beside the chart on small laptops and tablets. */
+@media (max-width: 1240px) {
+  .desk-floor {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: var(--sp-5);
+  }
+}
+
+/* One column: the asset and its chart, its position, then the ticket. */
+@media (max-width: 899px) {
+  .desk-floor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .desk-floor > .desk-main,
+  .desk-floor > .desk-ticket,
+  .desk-floor > .desk-lower {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .desk-ticket {
+    position: static;
+  }
+}
+
+@media (max-width: 960px) {
+  .tut-market,
+  .tut-check,
+  .lvl-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The opening scene becomes a picture above the welcome. */
+  .tut-intro {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .tut-intro-art {
+    position: static;
+    width: 100%;
+    aspect-ratio: auto;
+    transform: none;
+  }
+
+  .tut-intro-art > img {
+    position: static;
+    height: auto;
+  }
+
+  .tut-intro-card {
+    position: static;
+    width: auto;
+    min-width: 0;
+    margin: var(--sp-5) var(--gutter) var(--sp-8);
+  }
+}
+
+/* Phones and small tablets: one column, the order straight after the chart. */
+
+@media (max-width: 640px) {
+  .tut-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Holdings as two-line rows: the shares under the name, the percentage under the P&L. */
+  .sim-table th:nth-child(2),
+  .sim-table td:nth-child(2) {
+    display: none;
+  }
+
+  .sim-table-name small {
+    display: block;
+  }
+
+  .sim-table td small {
+    display: block;
+  }
+
+  .sim-say {
+    flex-direction: column;
+    align-items: stretch;
+    --neo-scale: 0.7;
+  }
+
+  .sim-say .sim-neo {
+    align-self: flex-start;
+  }
+
+  .sim-say-box {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sim-say-actions {
+    justify-content: stretch;
+  }
+
+  .sim-say-actions > * {
+    flex: 1;
+  }
+
+  .lvl-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sim-news button {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  /* The holdings table keeps the asset, shares, value and P&L; average and current price are on the asset itself. */
+  .sim-table th:nth-child(3),
+  .sim-table td:nth-child(3),
+  .sim-table th:nth-child(4),
+  .sim-table td:nth-child(4) {
+    display: none;
+  }
+
+  .desk-tools {
+    width: 100%;
+  }
+
+  .desk-tools .sim-button {
+    flex: 1;
+  }
+
+  .desk-account {
+    gap: var(--sp-2) var(--sp-5);
+    width: 100%;
+  }
+
+  .desk-position dl {
+    gap: var(--sp-2) var(--sp-5);
+  }
+
+  .sim-order {
+    padding: var(--sp-4);
+  }
+
+  .sim-table th,
+  .sim-table td {
+    padding: 0 var(--sp-2);
+    font-size: var(--fs-body);
+  }
+
+  .sim-table tbody th button,
+  .sim-table tbody th span {
+    gap: var(--sp-2);
+    font-size: var(--fs-body);
+  }
+
+  .sim-table .sim-mark {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/*
+ * Reduced motion: nothing travels, presses, slides or counts; colour and
+ * opacity still change (the tokens shorten them), so every state stays
+ * legible. Entrances become fades.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .sim-seg-mark,
+  .sim-link .sim-glyph {
+    transition: none;
+  }
+
+  .sim-button:active:not(:disabled) {
+    transform: none;
+  }
+
+  .sim-link[data-go]:hover .sim-glyph {
+    transform: none;
+  }
+
+  .sim-busy i {
+    animation: none;
+  }
+
+  .sim-neo img {
+    animation-name: sim-fade;
+  }
+
+  /* The floor: indicators and underlines jump to their place; arrivals and swaps fade without moving or blurring. */
+  .sim-sideswitch-mark,
+  .sim-switch-mark,
+  .desk-tabs button::after,
+  .sim-qty2-box button .sim-glyph,
+  .sim-qty2-fill button {
+    transition-property: background-color, border-color, color, opacity;
+  }
+
+  .sim-qty2-box button:not(:disabled):active .sim-glyph,
+  .sim-qty2-fill button:not(:disabled):active {
+    transform: none;
+  }
+
+  .desk,
+  .lvl,
+  .desk-main[data-swap],
+  .sim-trades li[data-fresh],
+  .sim-order-note,
+  .sim-explain-note,
+  .sim-receipt {
+    animation-name: sim-fade;
+    animation-duration: 160ms;
+  }
+}
+
+@keyframes sim-fade {
+  from {
+    opacity: 0;
+  }
+}

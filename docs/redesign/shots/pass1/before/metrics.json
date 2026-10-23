@@ -1,0 +1,89 @@
+[
+ {
+  "label": "before",
+  "page": "home",
+  "size": "1440x900",
+  "overflow": -10,
+  "pageHeight": 900,
+  "boxes": 0,
+  "cityShare": 0.93,
+  "chartShare": null,
+  "biggest": {
+   "size": 48,
+   "text": "Total value",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA",
+   "Medansh's city",
+   "₹1,00,259.80₹1,00,259.80",
+   "₹1,00,259.80",
+   "1",
+   ",",
+   "0"
+  ]
+ },
+ {
+  "label": "before",
+  "page": "home",
+  "size": "1024x768",
+  "overflow": -10,
+  "pageHeight": 1053,
+  "boxes": 0,
+  "cityShare": 0.91,
+  "chartShare": null,
+  "biggest": {
+   "size": 48,
+   "text": "Total value",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA",
+   "Medansh's city",
+   "₹1,00,315.50₹1,00,315.50",
+   "₹1,00,315.50",
+   "1",
+   ",",
+   "0"
+  ]
+ },
+ {
+  "label": "before",
+  "page": "home",
+  "size": "390x844",
+  "overflow": 0,
+  "pageHeight": 2094,
+  "boxes": 0,
+  "cityShare": 0.62,
+  "chartShare": null,
+  "biggest": {
+   "size": 36,
+   "text": "Total value",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA",
+   "Medansh's city",
+   "₹1,00,314.90₹1,00,314.90",
+   "₹1,00,314.90",
+   "1",
+   ",",
+   "0"
+  ]
+ }
+]

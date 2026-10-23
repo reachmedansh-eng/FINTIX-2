@@ -1,0 +1,57 @@
+.loader {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.loader span {
+  display: flex;
+  gap: 6px;
+}
+
+.loader i {
+  width: 8px;
+  height: 8px;
+  background: var(--cyan);
+  opacity: 0.25;
+  animation: loader-step 900ms steps(1) infinite;
+}
+
+.loader i:nth-child(2) { animation-delay: 300ms; }
+.loader i:nth-child(3) { animation-delay: 600ms; }
+
+.loader b {
+  font-weight: inherit;
+}
+
+@keyframes loader-step {
+  0%, 33% { opacity: 1; }
+  34%, 100% { opacity: 0.25; }
+}
+
+/* A whole section waiting: the navigation bar is already in place, and the indicator sits in the page area below it. */
+.section-loading {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background: var(--ink);
+}
+
+.section-loading > div {
+  flex: 1;
+  display: grid;
+  place-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader i {
+    animation: none;
+    opacity: 0.7;
+  }
+}

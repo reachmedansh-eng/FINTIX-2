@@ -1,0 +1,50 @@
+.nb {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background: var(--ink);
+}
+
+.nb-main {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 32px var(--gutter);
+}
+
+.nb-card {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 560px);
+  padding: 28px 30px;
+  border: 1px solid rgba(110, 140, 255, 0.25);
+  background: #0a1230;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #b6c1e3;
+}
+
+.nb-kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.nb-card h1 {
+  font-size: round(26px, var(--snap));
+  line-height: 1.1;
+  color: var(--white);
+}
+
+.nb-back {
+  justify-self: start;
+  color: #7fb0ff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.nb-back:hover {
+  color: var(--white);
+}

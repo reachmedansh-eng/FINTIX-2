@@ -1,0 +1,176 @@
+[
+ {
+  "label": "after",
+  "page": "home",
+  "size": "1440x900",
+  "overflow": -10,
+  "pageHeight": 900,
+  "boxes": 0,
+  "cityShare": 0.93,
+  "chartShare": null,
+  "biggest": {
+   "size": 48,
+   "text": "Total value",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA",
+   "Medansh's city",
+   "₹1,01,270.30₹1,01,270.30",
+   "₹1,01,270.30",
+   "1",
+   ",",
+   "0"
+  ]
+ },
+ {
+  "label": "after",
+  "page": "home",
+  "size": "1024x768",
+  "overflow": -10,
+  "pageHeight": 1053,
+  "boxes": 0,
+  "cityShare": 0.91,
+  "chartShare": null,
+  "biggest": {
+   "size": 48,
+   "text": "Total value",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA",
+   "Medansh's city",
+   "₹1,01,270.30₹1,01,270.30",
+   "₹1,01,270.30",
+   "1",
+   ",",
+   "0"
+  ]
+ },
+ {
+  "label": "after",
+  "page": "home",
+  "size": "390x844",
+  "overflow": 0,
+  "pageHeight": 2058,
+  "boxes": 0,
+  "cityShare": 0.62,
+  "chartShare": null,
+  "biggest": {
+   "size": 36,
+   "text": "Total value",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA",
+   "Medansh's city",
+   "₹1,01,286.30₹1,01,286.30",
+   "₹1,01,286.30",
+   "1",
+   ",",
+   "0"
+  ]
+ },
+ {
+  "label": "after",
+  "page": "desk",
+  "size": "1440x900",
+  "overflow": -10,
+  "pageHeight": 1350,
+  "boxes": 1,
+  "cityShare": null,
+  "chartShare": 0.33,
+  "biggest": {
+   "size": 40,
+   "text": "₹257.45",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Trading floor",
+   "NOVA",
+   "AERO",
+   "VNTA",
+   "KRON",
+   "MEDX",
+   "TERA",
+   "BOLT",
+   "LUMA",
+   "Nova",
+   "Your position",
+   "Order"
+  ]
+ },
+ {
+  "label": "after",
+  "page": "desk",
+  "size": "1024x768",
+  "overflow": -10,
+  "pageHeight": 1283,
+  "boxes": 1,
+  "cityShare": null,
+  "chartShare": 0.24,
+  "biggest": {
+   "size": 40,
+   "text": "₹257.85",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Trading floor",
+   "NOVA",
+   "AERO",
+   "VNTA",
+   "KRON",
+   "MEDX",
+   "TERA",
+   "BOLT",
+   "LUMA",
+   "Nova",
+   "Your position",
+   "Order"
+  ]
+ },
+ {
+  "label": "after",
+  "page": "desk",
+  "size": "390x844",
+  "overflow": 0,
+  "pageHeight": 2030,
+  "boxes": 1,
+  "cityShare": null,
+  "chartShare": 0.26,
+  "biggest": {
+   "size": 32,
+   "text": "₹257.90",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Trading floor",
+   "NOVA",
+   "AERO",
+   "VNTA",
+   "KRON",
+   "MEDX",
+   "TERA",
+   "BOLT",
+   "LUMA",
+   "Nova",
+   "Your position",
+   "Order"
+  ]
+ }
+]

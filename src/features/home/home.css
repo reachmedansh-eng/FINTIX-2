@@ -1,0 +1,1207 @@
+/* ------------------------------------------------------------------ */
+/* FINTIX — Home: the city and its treasury                             */
+/* The first screen is the world: the city on its plaza with the HUD    */
+/* at its edges. Below it, one section after another. The page sits on  */
+/* the simulator's base (.sim: tokens, controls, chart). Every class    */
+/* here starts with hm-: route stylesheets stay loaded after in-app     */
+/* navigation, so names are never shared.                               */
+/*                                                                      */
+/* Type scale: Retropix 60 (the treasury), 24 (titles), 12 (tickers and */
+/* HUD heads); Space Grotesk 24 (invested and cash), 17 (since start),  */
+/* 15 (rows), 14 (body), 13 (meta). Nothing smaller than 12.            */
+/* ------------------------------------------------------------------ */
+
+/*
+ * The area the HUD leaves free for the city is declared here, per layout,
+ * and read by the camera (City.tsx). Registered as lengths so they arrive
+ * in pixels.
+ */
+@property --safe-left {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --safe-right {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --safe-top {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --safe-bottom {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+.hm-main {
+  display: grid;
+}
+
+.hm-wait {
+  display: grid;
+  place-items: center;
+  min-height: calc(100svh - 60px);
+}
+
+.hm-world > .sim-error {
+  width: min(100% - 2 * var(--gutter), 1520px);
+  margin: var(--sp-4) auto 0;
+}
+
+/* Labels on Home are sentence case: the brief's uppercase figure labels stay on the trading floor. */
+.hm .hm-panel .sim-cap,
+.hm-label {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--fx-muted);
+}
+
+/* ---- The stage: the first screen ------------------------------------------ */
+
+/*
+ * The city spans the whole stage, under the HUD: the treasury and balance on
+ * the left, the holdings (or the chosen asset) on the right, a way down to
+ * the rest of the page at the foot. The stage stops a little short of the
+ * screen's height, so the next section's title shows below it.
+ * Grid at 1440: 2 × gutter (54) + 360 + 24 + 1fr (638) + 24 + 340 = 1440.
+ */
+.hm-stage {
+  --hud-left: 360px;
+  --hud-right: 340px;
+  --hud-gap: var(--sp-6);
+  --peek: 136px;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--hud-left) minmax(0, 1fr) var(--hud-right);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "treasury . side"
+    "balance . side"
+    ". . side"
+    ". cue side";
+  column-gap: var(--hud-gap);
+  padding: var(--sp-8) var(--gutter) var(--sp-4);
+}
+
+/* The city: the whole stage, behind the HUD, edge to edge. */
+.hm-city {
+  --safe-left: calc(var(--gutter) + var(--hud-left) + var(--hud-gap));
+  --safe-right: calc(var(--gutter) + var(--hud-right) + var(--hud-gap));
+  --safe-top: var(--sp-12);
+  --safe-bottom: var(--sp-10);
+
+  position: relative;
+  z-index: 0;
+  grid-row: 1 / -1;
+  grid-column: 1 / -1;
+  min-height: max(640px, calc(100svh - 60px - var(--peek)));
+  margin: calc(-1 * var(--sp-8)) calc(-1 * var(--gutter)) calc(-1 * var(--sp-4));
+  container-type: inline-size;
+}
+
+/* Every HUD region sits above the city. (:where keeps this rule weightless, so each region's own layout wins.) */
+.hm-stage > :where(:not(.hm-city)) {
+  position: relative;
+  z-index: 1;
+}
+
+.hm-city canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+
+.hm-city-note {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-6);
+  text-align: center;
+  color: var(--fx-muted);
+}
+
+.hm-city-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* A building's nameplate: a real button over its roof, pixel letters on the night. It steps up out of another's way, with a leader down to its roof. */
+.hm-city-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 4px 7px;
+  border: 1px solid var(--fx-line);
+  background: #03051f;
+  font-size: var(--fs-meta);
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--fx-text);
+  cursor: pointer;
+  pointer-events: auto;
+  transition:
+    opacity var(--t-base) ease,
+    border-color var(--t-quick) ease,
+    background-color var(--t-quick) ease,
+    color var(--t-quick) ease;
+}
+
+.hm-city-label::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 1px;
+  height: var(--lead, 0px);
+  background: var(--fx-control);
+  opacity: 0.7;
+}
+
+.hm-city-label b {
+  font-family: var(--font-pixel);
+  font-size: max(9.6px, round(12px, var(--snap)));
+  font-weight: 400;
+  letter-spacing: var(--px-track);
+}
+
+.hm-city-label span {
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-muted);
+}
+
+.hm-city-label[data-lit] {
+  border-color: var(--fx-control-hi);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hm-city-label:hover {
+    border-color: var(--fx-control-hi);
+  }
+}
+
+/* The chosen building's plate: gold, because it is yours, like its row, its footprint and the light over it. */
+.hm-city-label[aria-pressed="true"] {
+  border-color: var(--fx-own);
+  background: var(--fx-own);
+  color: var(--ink);
+}
+
+.hm-city-label[aria-pressed="true"] span {
+  color: var(--ink);
+}
+
+.hm-city-label[aria-pressed="true"]::after {
+  background: var(--fx-own);
+}
+
+.hm-city-label[data-dim="true"] {
+  opacity: 0.55;
+}
+
+/* In a narrow city the plates shrink to the ticker, so they cover less of the small buildings; the share stays in each plate's name and in the holdings. */
+@container (max-width: 620px) {
+  .hm-city-label {
+    padding: 4px 6px;
+  }
+
+  .hm-city-label span {
+    display: none;
+  }
+}
+
+/* The hover tip floats over the scene, so it alone casts a shadow. It eases in quickly and never waits. */
+.hm-tip {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  gap: 2px;
+  min-width: 140px;
+  padding: var(--sp-2) 10px;
+  border: 1px solid var(--fx-control);
+  background: var(--fx-raised);
+  box-shadow: var(--fx-float); /* taste-skill-ignore: the tip floats over the scene */
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transform: translate(-50%, calc(-100% - 14px));
+  pointer-events: none;
+  animation: hm-tip-in 140ms var(--ease-out);
+}
+
+@keyframes hm-tip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 10px));
+  }
+}
+
+.hm-tip em {
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* The way down to the rest of the page, at the foot of the city. */
+.hm-cue {
+  grid-area: cue;
+  justify-self: center;
+  align-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 36px;
+  padding: 0 var(--sp-3);
+  font-size: var(--fs-label);
+  color: var(--fx-muted);
+  transition: color var(--t-quick) ease;
+}
+
+.hm-cue .sim-glyph {
+  transition: transform var(--t-quick) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hm-cue:hover {
+    color: var(--fx-text);
+  }
+
+  .hm-cue:hover .sim-glyph {
+    transform: translateY(2px);
+  }
+}
+
+/* ---- The glitch and the terminal (the opening) ------------------------------------- */
+
+/* The real text stays in place (and in the accessibility tree) under a layer that draws the glitch. */
+.hm-glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.hm-glitch-layer {
+  position: absolute;
+  inset: 0;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hm-glitch[data-glitching] > .hm-glitch-real {
+  opacity: 0;
+}
+
+/* Once resolved, the layer is gone: nothing sits over the real text. */
+.hm-glitch:not([data-glitching]) > .hm-glitch-layer {
+  display: none;
+}
+
+.hm-glitch-layer .g-line {
+  position: relative;
+  display: inline-block;
+}
+
+.hm-glitch-layer .g-c {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* A character not reached yet: its place is held, nothing drawn. */
+.hm-glitch-layer .g-k,
+.hm-term .g-k {
+  visibility: hidden;
+}
+
+/* Noise at the leading edge: a cool tone, sometimes in the other typeface. */
+.hm-glitch-layer .g-n,
+.hm-term .g-n {
+  color: #8496e6;
+}
+
+.hm-glitch-layer .g-alt {
+  font-family: var(--font-pixel);
+  letter-spacing: var(--px-track);
+}
+
+.hm-glitch-pixel .hm-glitch-layer .g-alt {
+  font-family: var(--font-text);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.hm-glitch-layer .g-d {
+  opacity: 0.38;
+}
+
+.hm-glitch-pixel .hm-glitch-layer .g-sym {
+  margin-right: 0.06em;
+  font-family: var(--font-text);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* The line torn in two: the top slice and the bottom slice slip apart. */
+.hm-glitch-layer .g-top {
+  clip-path: inset(0 0 52% 0);
+}
+
+.hm-glitch-layer .g-bottom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  clip-path: inset(48% 0 0 0);
+}
+
+/* Earlier states, stacked under the line as it types. */
+.hm-glitch-layer .g-echo {
+  position: absolute;
+  left: 0;
+  white-space: nowrap;
+  color: var(--fx-faint);
+}
+
+/* A frame dropping out: a solid block flashes over the figure. */
+.hm-glitch-layer .g-block {
+  position: absolute;
+  display: block;
+  background: var(--fx-accent);
+}
+
+.hm-glitch-layer .g-block[data-tone="own"] {
+  background: var(--fx-own);
+}
+
+/* The cursor that waits where the treasury figure will appear. */
+.hm-glitch-layer .g-cursor {
+  display: inline-block;
+  width: 0.42em;
+  height: 0.8em;
+  vertical-align: -0.04em;
+  background: var(--fx-text);
+}
+
+/* The terminal: system lines typing out over the unlit city, then collapsing as its lights come up. */
+.hm-term {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  align-self: center;
+  justify-self: center;
+  z-index: 2;
+  display: grid;
+  gap: 2px;
+  min-width: 300px;
+  font-size: var(--fs-row);
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+  color: var(--fx-text);
+  pointer-events: none;
+}
+
+.hm-term[data-done] {
+  display: none;
+}
+
+.hm-term-line {
+  display: block;
+}
+
+/* ---- Treasury: what the city is worth -------------------------------------- */
+
+.hm-treasury {
+  grid-area: treasury;
+  align-self: start;
+  display: grid;
+  justify-items: start;
+}
+
+.hm-treasury h1 {
+  font-size: round(down, 24px, var(--snap));
+  line-height: 1.2;
+  color: var(--fx-text);
+}
+
+/* The answer: the largest figure on the page, a treasury counter in the world's letters (5× Retropix's grid). */
+.hm-value {
+  margin-top: var(--sp-4);
+  font-size: round(down, 60px, var(--snap));
+  line-height: 1;
+  color: var(--fx-text);
+}
+
+.hm-since {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  margin-top: var(--sp-4);
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-since b {
+  font-weight: 600;
+}
+
+.hm-since > span {
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+}
+
+.hm-sim-note {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+/* ---- Balance: invested and cash as one whole; P/L in its two parts ---- */
+
+.hm-balance {
+  grid-area: balance;
+  align-self: start;
+  display: grid;
+  gap: var(--sp-6);
+  margin-top: var(--sp-8);
+}
+
+.hm-period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-row);
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-period p b {
+  font-weight: 600;
+}
+
+.hm-period p > span {
+  color: var(--fx-muted);
+}
+
+.hm-period .sim-seg button {
+  min-width: 32px;
+  min-height: 34px;
+  padding: 0 6px;
+  font-size: var(--fs-label);
+}
+
+.hm-period .sim-seg-mark {
+  bottom: 1px;
+}
+
+.hm-split {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+/* Both ends of the meter, named: invested on the left in gold, cash on the right. */
+.hm-split-key {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+}
+
+.hm-split-key span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.hm-split-key b {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-text);
+}
+
+.hm-key-own,
+.hm-key-cash {
+  width: 10px;
+  height: 10px;
+  background: var(--fx-own);
+}
+
+.hm-key-cash {
+  background: var(--fx-lift);
+  outline: 1px solid var(--fx-control);
+  outline-offset: -1px;
+}
+
+/* Forty pixel blocks, 2.5% each: gold for what is invested, navy for cash. They turn one after another, from the left. */
+.hm-meter {
+  display: grid;
+  grid-template-columns: repeat(40, minmax(0, 1fr));
+  gap: 3px;
+  height: 28px;
+}
+
+.hm-meter i {
+  background: var(--fx-lift);
+  transition: background-color var(--t-base) ease;
+  transition-delay: calc(var(--i) * 12ms);
+}
+
+.hm-meter i[data-own] {
+  background: var(--fx-own);
+}
+
+.hm-split-figures {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin: 0;
+}
+
+.hm-split-figures dd {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-split-figures div:last-child dd {
+  text-align: right;
+}
+
+/* P/L as two lines: the name on the left, the figure on the right, what it means under the name. */
+.hm-pl {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--fx-line);
+}
+
+.hm-pl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: var(--sp-3);
+}
+
+.hm-pl dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+}
+
+.hm-pl dd {
+  margin: 0;
+}
+
+.hm-pl dd[data-tone] {
+  font-size: var(--fs-row);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.hm-pl-note {
+  grid-column: 1 / -1;
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+/* ---- Holdings: your buildings, on the right ------------------------------------- */
+
+.hm-hud-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-1) var(--sp-3);
+}
+
+.hm-hud-head p {
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+.hm-holdings {
+  grid-area: side;
+  align-self: start;
+  display: grid;
+  gap: var(--sp-3);
+  padding-top: 6px;
+}
+
+.hm-stage[data-panel] .hm-holdings {
+  display: none;
+}
+
+.hm-finding {
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--fx-muted);
+}
+
+.hm-finding [data-tone] {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-rows {
+  margin: var(--sp-1) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--fx-line);
+}
+
+.hm-rows li {
+  border-bottom: 1px solid var(--fx-rule);
+}
+
+.hm-rows button {
+  position: relative;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  min-height: 54px;
+  padding: 6px var(--sp-2) 8px var(--sp-3);
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--t-quick) ease;
+}
+
+/* The chosen holding: a gold edge (yours), like its plate and the light over its building. */
+.hm-rows button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background: var(--fx-own);
+  transform: scaleY(0);
+  transition: transform var(--t-base) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hm-rows button:hover {
+    background: rgba(14, 21, 54, 0.72);
+  }
+}
+
+/* Its building is pointed at in the city. */
+.hm-rows button[data-lit] {
+  background: rgba(14, 21, 54, 0.72);
+}
+
+.hm-rows button[aria-pressed="true"],
+.hm-rows button:active {
+  background: var(--fx-raised);
+}
+
+.hm-rows button[aria-pressed="true"]::before {
+  transform: scaleY(1);
+}
+
+.hm-row-name {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.hm-row-name small {
+  overflow: hidden;
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--fx-faint);
+}
+
+.hm-row-value {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-row-value b {
+  font-size: var(--fs-row);
+  font-weight: 600;
+}
+
+.hm-row-value small {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+/* Share of holdings as a thin grey bar along the row's foot (scaled from the left); gold when chosen. */
+.hm-row-weight {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--fx-control);
+  transform-origin: left;
+  transition:
+    transform var(--t-base) var(--ease-out),
+    background-color var(--t-quick) ease;
+}
+
+.hm-rows button[aria-pressed="true"] .hm-row-weight {
+  background: var(--fx-own);
+}
+
+.hm-holdings-empty {
+  display: grid;
+  gap: 10px;
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--fx-line);
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+}
+
+/* The first purchase, said in the world: over the empty plaza. */
+.hm-first {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  align-self: start;
+  justify-self: center;
+  margin-top: 14vh;
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  max-width: 340px;
+  font-size: var(--fs-body);
+  text-align: center;
+  color: var(--fx-muted);
+  pointer-events: none;
+}
+
+/* ---- The chosen asset: the one panel on Home ------------------------------------- */
+
+/* The panel takes the holdings' place; its content never sizes the stage (a long order scrolls inside it). */
+.hm-side {
+  grid-area: side;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-bottom: var(--sp-2);
+  contain: size;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+/* A tone step up from the night, with the gold edge when it is one of your buildings. It slides in from the edge it docks to. */
+.hm-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
+  border: 1px solid var(--fx-line);
+  background: var(--fx-panel);
+  animation: hm-panel-in var(--t-panel) var(--ease-drawer);
+}
+
+@keyframes hm-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--panel-from, 16px));
+  }
+}
+
+.hm-panel[data-owned] {
+  border-top: 2px solid var(--fx-own);
+}
+
+.hm-panel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 24px;
+}
+
+.hm-panel-why {
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+/* One column that is exactly the panel's width: a chart sized to its own drawing could never shrink. */
+.hm-panel-chart {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-2);
+}
+
+.hm-panel-chart .sim-seg {
+  justify-self: start;
+}
+
+.hm-panel-position {
+  display: grid;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--fx-rule);
+}
+
+.hm-panel-position .sim-facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* An odd last figure takes the whole row rather than leaving an empty cell beside it. */
+.hm-panel-position .sim-facts > div:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.hm-panel-none {
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--fx-rule);
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+}
+
+.hm-panel-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  gap: var(--sp-2);
+}
+
+.hm-why {
+  margin-top: calc(-1 * var(--sp-2));
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.hm-panel-desk {
+  justify-self: start;
+}
+
+/* The desk's ticket and receipt sit inside the panel without a second frame. */
+.hm .hm-panel .sim-block {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+/* ---- The opening (first visit of a session) ----------------------------------------- */
+
+/*
+ * Everything here is keyed to the opening's start (data-go): until then the
+ * HUD's labels, the holdings, the city's plates and the way down wait,
+ * unseen, while the terminal types over the dark city and the figures hold a
+ * cursor or nothing. From the start the labels flicker on in hard steps,
+ * like a display warming up, the holdings come in one after another, and the
+ * plates appear once the city is lit. The figures are drawn by the glitch
+ * layer, the meter by its own blocks.
+ */
+.hm-world[data-boot="full"]:not([data-go]) :is(.hm-holdings .hm-hud-head, .hm-finding, .hm-rows li, .hm-cue, .hm-city-labels, .hm-sim-note, .hm-since > span, .hm-since > .sim-glyph, .hm-period p > span, .hm-period .sim-seg, .hm-split-key, .hm-meter, .hm-pl dt, .hm-pl-note, .hm-pl) {
+  opacity: 0;
+}
+
+.hm-world[data-boot="full"][data-go] :is(.hm-sim-note, .hm-since > span, .hm-since > .sim-glyph, .hm-period p > span) {
+  animation: hm-flicker 420ms steps(1, end) both;
+  animation-delay: 700ms;
+}
+
+.hm-world[data-boot="full"][data-go] :is(.hm-period .sim-seg, .hm-split-key, .hm-meter) {
+  animation: hm-flicker 420ms steps(1, end) both;
+  animation-delay: 780ms;
+}
+
+.hm-world[data-boot="full"][data-go] :is(.hm-pl, .hm-pl dt, .hm-pl-note) {
+  animation: hm-flicker 420ms steps(1, end) both;
+  animation-delay: 900ms;
+}
+
+.hm-world[data-boot="full"][data-go] :is(.hm-holdings .hm-hud-head, .hm-finding) {
+  animation: hm-flicker 420ms steps(1, end) both;
+  animation-delay: 950ms;
+}
+
+.hm-world[data-boot="full"][data-go] .hm-rows li {
+  animation: hm-row-in 320ms var(--ease-out) both;
+  animation-delay: calc(1100ms + var(--i) * 45ms);
+}
+
+.hm-world[data-boot="full"][data-go] .hm-city-labels {
+  animation: hm-flicker 420ms steps(1, end) both;
+  animation-delay: 1100ms;
+}
+
+.hm-world[data-boot="full"][data-go] .hm-cue {
+  animation: hm-fade 400ms var(--ease-out) both;
+  animation-delay: 1600ms;
+}
+
+/* A later visit in the same session: the page is simply there, after the briefest fade. */
+.hm-world[data-boot="quiet"] .hm-stage {
+  animation: hm-fade 200ms var(--ease-out);
+}
+
+@keyframes hm-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* A display warming up: on, off, half, on. Held in hard steps, never eased. */
+@keyframes hm-flicker {
+  0% {
+    opacity: 0;
+  }
+
+  18% {
+    opacity: 0.8;
+  }
+
+  30% {
+    opacity: 0.1;
+  }
+
+  48% {
+    opacity: 1;
+  }
+
+  58% {
+    opacity: 0.35;
+  }
+
+  72%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes hm-row-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}
+
+/* ---- Wide and mid desktops ----------------------------------------------------- */
+
+@media (min-width: 1680px) {
+  .hm-stage {
+    --hud-left: 400px;
+    --hud-right: 380px;
+  }
+}
+
+@media (max-width: 1360px) {
+  .hm-stage {
+    --hud-left: 324px;
+    --hud-right: 316px;
+  }
+
+  .hm-value {
+    font-size: round(down, 48px, var(--snap));
+  }
+
+  .hm-split-figures dd {
+    font-size: 20px;
+  }
+}
+
+/*
+ * Tablets and small laptops: the left HUD and the city fill the first screen;
+ * the holdings follow below the city, in two columns. The chosen asset takes
+ * the left HUD's place while it is open (the HUD returns on Close).
+ */
+@media (max-width: 1179px) {
+  .hm-stage {
+    --hud-left: 330px;
+
+    grid-template-columns: var(--hud-left) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "treasury ."
+      "balance ."
+      ". ."
+      ". cue"
+      "holdings holdings";
+  }
+
+  .hm-city {
+    --safe-right: var(--gutter);
+
+    grid-row: 1 / 5;
+    margin-bottom: 0;
+  }
+
+  .hm-holdings {
+    grid-area: holdings;
+    margin-top: var(--sp-10);
+  }
+
+  .hm-rows {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--sp-8);
+  }
+
+  .hm-stage[data-panel] .hm-holdings {
+    display: grid;
+  }
+
+  .hm-side {
+    grid-area: 1 / 1 / 5 / 2;
+    --panel-from: -16px;
+  }
+
+  .hm-stage[data-panel] :is(.hm-treasury, .hm-balance) {
+    visibility: hidden;
+  }
+
+  .hm-first {
+    grid-row: 1 / 4;
+  }
+}
+
+/*
+ * Phones: the city is a band at the top with the treasury over its sky;
+ * below it the balance, the holdings and the chosen asset, then the
+ * sections. One region after another, in the order they answer.
+ */
+@media (max-width: 760px) {
+  .hm-stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      "band"
+      "balance"
+      "holdings"
+      "side";
+    padding: 0 var(--gutter);
+  }
+
+  .hm-city {
+    --safe-left: var(--sp-3);
+    --safe-right: var(--sp-3);
+    --safe-top: 176px;
+    --safe-bottom: var(--sp-3);
+
+    grid-area: band;
+    min-height: 0;
+    height: clamp(460px, 66svh, 600px);
+    margin: 0 calc(-1 * var(--gutter));
+  }
+
+  .hm-treasury {
+    grid-area: band;
+    padding-top: var(--sp-5);
+    pointer-events: none;
+  }
+
+  .hm-value {
+    margin-top: var(--sp-3);
+    font-size: round(down, 48px, var(--snap));
+  }
+
+  .hm-since {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-row);
+  }
+
+  .hm-first {
+    grid-area: band;
+    align-self: start;
+    margin-top: 200px;
+    padding: 0 var(--sp-2);
+  }
+
+  .hm-cue {
+    display: none;
+  }
+
+  .hm-balance {
+    margin-top: var(--sp-2);
+  }
+
+  .hm-holdings {
+    margin-top: var(--sp-10);
+  }
+
+  .hm-rows {
+    display: block;
+  }
+
+  .hm-side {
+    grid-area: side;
+    margin-top: var(--sp-8);
+    padding-bottom: 0;
+    contain: none;
+    overflow: visible;
+    --panel-from: 0px;
+  }
+
+  .hm-stage[data-panel] :is(.hm-treasury, .hm-balance) {
+    visibility: visible;
+  }
+
+  .hm-panel {
+    padding: var(--sp-4);
+  }
+
+  .hm-term {
+    grid-area: band;
+    align-self: start;
+    justify-self: start;
+    min-width: 0;
+    margin-top: 260px;
+    font-size: var(--fs-body);
+  }
+}
+
+/* Reduced motion: nothing travels or turns; panels appear in place (colour and opacity still change, briefly). */
+@media (prefers-reduced-motion: reduce) {
+  .hm-world[data-boot="quiet"] .hm-stage {
+    animation-name: sim-fade;
+    animation-duration: 160ms;
+  }
+
+  .hm-panel {
+    animation-name: sim-fade;
+    animation-duration: 160ms;
+  }
+
+  .hm-tip {
+    animation: none;
+  }
+
+  .hm-meter i {
+    transition-delay: 0ms;
+  }
+
+  .hm-rows button::before,
+  .hm-row-weight {
+    transition-property: background-color;
+  }
+
+  .hm-cue .sim-glyph {
+    transition: none;
+  }
+}

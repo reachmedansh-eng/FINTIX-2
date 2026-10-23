@@ -1,0 +1,131 @@
+[
+ {
+  "label": "seeded",
+  "page": "home",
+  "size": "1440x900",
+  "overflow": -10,
+  "pageHeight": 1276,
+  "boxes": 1,
+  "cityShare": 0.35,
+  "chartShare": 0.04,
+  "biggest": {
+   "size": 40,
+   "text": "Total value ₹99,366.20",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Your portfolio",
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA"
+  ]
+ },
+ {
+  "label": "seeded",
+  "page": "home",
+  "size": "1024x768",
+  "overflow": -10,
+  "pageHeight": 1898,
+  "boxes": 1,
+  "cityShare": 0.55,
+  "chartShare": 0,
+  "biggest": {
+   "size": 40,
+   "text": "Total value ₹99,334.10",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Your portfolio",
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA"
+  ]
+ },
+ {
+  "label": "seeded",
+  "page": "home",
+  "size": "390x844",
+  "overflow": 0,
+  "pageHeight": 2864,
+  "boxes": 1,
+  "cityShare": 0.34,
+  "chartShare": 0,
+  "biggest": {
+   "size": 34,
+   "text": "Total value ₹99,329.00",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Your portfolio",
+   "KRON",
+   "MEDX",
+   "AERO",
+   "NOVA",
+   "LUMA",
+   "TERA"
+  ]
+ },
+ {
+  "label": "seeded",
+  "page": "desk",
+  "size": "1440x900",
+  "overflow": -10,
+  "pageHeight": 1367,
+  "boxes": 2,
+  "cityShare": null,
+  "chartShare": 0.16,
+  "biggest": {
+   "size": 30,
+   "text": "₹262.45",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Trading desk",
+   "NOVA"
+  ]
+ },
+ {
+  "label": "seeded",
+  "page": "desk",
+  "size": "1024x768",
+  "overflow": -10,
+  "pageHeight": 1626,
+  "boxes": 2,
+  "cityShare": null,
+  "chartShare": 0,
+  "biggest": {
+   "size": 30,
+   "text": "₹262.65",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Trading desk",
+   "NOVA"
+  ]
+ },
+ {
+  "label": "seeded",
+  "page": "desk",
+  "size": "390x844",
+  "overflow": 0,
+  "pageHeight": 2371,
+  "boxes": 3,
+  "cityShare": null,
+  "chartShare": 0.08,
+  "biggest": {
+   "size": 26,
+   "text": "₹262.75",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Trading desk",
+   "NOVA"
+  ]
+ }
+]

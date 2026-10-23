@@ -1,0 +1,119 @@
+[
+ {
+  "label": "empty",
+  "page": "home",
+  "size": "1440x900",
+  "overflow": -10,
+  "pageHeight": 1081,
+  "boxes": 1,
+  "cityShare": 0.26,
+  "chartShare": 0.04,
+  "biggest": {
+   "size": 40,
+   "text": "Total value ₹1,00,000.00",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Your portfolio",
+   "Your city starts here",
+   "MEDX"
+  ]
+ },
+ {
+  "label": "empty",
+  "page": "home",
+  "size": "1024x768",
+  "overflow": -10,
+  "pageHeight": 1544,
+  "boxes": 1,
+  "cityShare": 0.46,
+  "chartShare": 0,
+  "biggest": {
+   "size": 40,
+   "text": "Total value ₹1,00,000.00",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Your portfolio",
+   "Your city starts here",
+   "MEDX"
+  ]
+ },
+ {
+  "label": "empty",
+  "page": "home",
+  "size": "390x844",
+  "overflow": 0,
+  "pageHeight": 2452,
+  "boxes": 1,
+  "cityShare": 0.36,
+  "chartShare": 0,
+  "biggest": {
+   "size": 34,
+   "text": "Total value ₹1,00,000.00",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Your portfolio",
+   "Your city starts here",
+   "MEDX"
+  ]
+ },
+ {
+  "label": "empty",
+  "page": "desk",
+  "size": "1440x900",
+  "overflow": -10,
+  "pageHeight": 1060,
+  "boxes": 2,
+  "cityShare": null,
+  "chartShare": 0.16,
+  "biggest": {
+   "size": 30,
+   "text": "₹264.95",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Trading desk",
+   "NOVA"
+  ]
+ },
+ {
+  "label": "empty",
+  "page": "desk",
+  "size": "1024x768",
+  "overflow": -10,
+  "pageHeight": 1269,
+  "boxes": 2,
+  "cityShare": null,
+  "chartShare": 0.03,
+  "biggest": {
+   "size": 30,
+   "text": "₹264.95",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Trading desk",
+   "NOVA"
+  ]
+ },
+ {
+  "label": "empty",
+  "page": "desk",
+  "size": "390x844",
+  "overflow": 0,
+  "pageHeight": 2034,
+  "boxes": 3,
+  "cityShare": null,
+  "chartShare": 0.08,
+  "biggest": {
+   "size": 26,
+   "text": "₹265.15",
+   "font": "grotesk"
+  },
+  "retropix": [
+   "Trading desk",
+   "NOVA"
+  ]
+ }
+]

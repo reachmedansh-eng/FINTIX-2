@@ -1,0 +1,1343 @@
+/* ------------------------------------------------------------------ */
+/* FINTIX — Home: the sections below the city                           */
+/* Each section has its own layout for its own content: the market as a */
+/* chart on a scale, the news as a feed (a lead story with its evidence, */
+/* then a timeline), the next lesson as the one raised surface with the */
+/* module's own art, the ledger as a ruled table on the sunk ground.    */
+/* Every class starts with hm- (route stylesheets persist).             */
+/* ------------------------------------------------------------------ */
+
+/* ---- A section ------------------------------------------------------------ */
+
+.hm-band {
+  display: grid;
+  gap: var(--sp-8);
+  padding: 112px var(--gutter) 0;
+}
+
+/* A section's head: its title in Retropix, what it shows in one plain line, its link or legend at the far end, on a rule. */
+.hm-band-head {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2) var(--sp-5);
+  padding-bottom: var(--sp-5);
+}
+
+.hm-band-head h2 {
+  font-size: round(down, 36px, var(--snap));
+  line-height: 1.1;
+  color: var(--fx-text);
+}
+
+.hm-band-head > p {
+  font-size: var(--fs-row);
+  line-height: 1.4;
+  color: var(--fx-muted);
+}
+
+.hm-band-head > :last-child:not(h2, p:first-of-type) {
+  margin-left: auto;
+}
+
+.hm-band-head::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--fx-line);
+  transform-origin: left;
+  transition: transform 640ms var(--ease-out);
+}
+
+.hm-band-body {
+  min-width: 0;
+  transition:
+    opacity var(--t-panel) var(--ease-out) 180ms,
+    transform var(--t-panel) var(--ease-out) 180ms;
+}
+
+/* Reached for the first time on a first visit: the rule draws across, the title glitches in, then the content settles. Once. */
+.hm-band[data-reveal="pending"] .hm-band-head::after {
+  transform: scaleX(0);
+}
+
+.hm-band[data-reveal="pending"] .hm-band-body {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.hm-empty {
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+}
+
+.hm-own-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--fx-own);
+}
+
+/* ---- Market pulse: the market's horizon --------------------------------------- */
+
+.hm-own-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+}
+
+.hm-own-legend i {
+  width: 18px;
+  height: 3px;
+  background: var(--fx-own);
+}
+
+.hm-breadth {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-6);
+  font-size: var(--fs-title);
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-breadth b {
+  font-weight: 600;
+}
+
+/*
+ * The chart: a scale gutter on the left (+top, 0%, −top), a dashed line at
+ * each end of the scale, the 0% line solid. A bar's longest is `--span`, so
+ * its value label always has room beyond it.
+ */
+.hm-chart {
+  --reach: 104px;
+  --span: calc(var(--reach) - 26px);
+
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  margin-top: var(--sp-2);
+}
+
+.hm-chart::before,
+.hm-chart::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  left: 56px;
+  border-top: 1px dashed var(--fx-line);
+  pointer-events: none;
+}
+
+.hm-chart::before {
+  top: calc(var(--reach) - var(--span));
+}
+
+.hm-chart::after {
+  top: calc(var(--reach) + var(--span));
+}
+
+.hm-axis {
+  position: relative;
+  height: calc(var(--reach) * 2);
+  margin: 0;
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-faint);
+}
+
+.hm-axis span {
+  position: absolute;
+  right: var(--sp-3);
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+.hm-axis [data-at="top"] {
+  top: calc(var(--reach) - var(--span));
+}
+
+.hm-axis [data-at="zero"] {
+  top: var(--reach);
+  color: var(--fx-muted);
+}
+
+.hm-axis [data-at="bottom"] {
+  top: calc(var(--reach) + var(--span));
+}
+
+.hm-horizon {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The 0% line. */
+.hm-horizon::before {
+  content: "";
+  position: absolute;
+  top: var(--reach);
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--fx-control);
+}
+
+.hm-horizon button {
+  display: grid;
+  grid-template-rows: calc(var(--reach) * 2) auto auto;
+  justify-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: 0 var(--sp-1) var(--sp-4);
+  border: 0;
+  background: none;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background-color var(--t-quick) ease,
+    opacity var(--t-quick) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hm-horizon button:hover {
+    background: rgba(14, 21, 54, 0.62);
+  }
+}
+
+.hm-horizon button:active {
+  background: var(--fx-raised);
+}
+
+/* Pointing at a story in the news lights its column; the rest step back. */
+.hm-chart[data-focus] .hm-horizon button:not([data-match]) {
+  opacity: 0.42;
+}
+
+.hm-col {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* A bar: a stack of pixel blocks, revealed to its length by a clip so the blocks stay square at every length. */
+.hm-col i {
+  position: absolute;
+  left: 50%;
+  width: 30px;
+  height: var(--span);
+  margin-left: -15px;
+  transition: clip-path 620ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 45ms + 120ms);
+}
+
+.hm-horizon [data-tone="up"] .hm-col i {
+  bottom: calc(50% + 1px);
+  background: var(--fx-up);
+  mask: repeating-linear-gradient(to top, #000 0 6px, transparent 6px 8px); /* taste-skill-ignore: a hard-edged mask that cuts the bar into pixel blocks, not a visible gradient */
+  clip-path: inset(calc((1 - var(--h)) * 100%) 0 0 0);
+}
+
+.hm-horizon :is([data-tone="down"], [data-tone="flat"]) .hm-col i {
+  top: calc(50% + 1px);
+  background: var(--fx-down);
+  mask: repeating-linear-gradient(to bottom, #000 0 6px, transparent 6px 8px); /* taste-skill-ignore: a hard-edged mask that cuts the bar into pixel blocks, not a visible gradient */
+  clip-path: inset(0 0 calc((1 - var(--h)) * 100%) 0);
+}
+
+.hm-horizon [data-tone="flat"] .hm-col i {
+  background: var(--fx-muted);
+}
+
+/* The signed change, at the end of its own bar. */
+.hm-col-value {
+  position: absolute;
+  right: 0;
+  left: 0;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  transition: opacity var(--t-base) ease;
+  transition-delay: calc(var(--i, 0) * 45ms + 420ms);
+}
+
+.hm-horizon [data-tone="up"] .hm-col-value {
+  bottom: calc(50% + var(--span) * var(--h) + 8px);
+  color: var(--fx-up);
+}
+
+.hm-horizon [data-tone="down"] .hm-col-value {
+  top: calc(50% + var(--span) * var(--h) + 8px);
+  color: var(--fx-down);
+}
+
+.hm-horizon [data-tone="flat"] .hm-col-value {
+  bottom: calc(50% + 8px);
+  color: var(--fx-muted);
+}
+
+/* Before the section is first reached, every bar is clipped away and its value hidden; they rise from the line in turn. */
+.hm-band[data-reveal="pending"] .hm-horizon [data-tone="up"] .hm-col i {
+  clip-path: inset(100% 0 0 0);
+}
+
+.hm-band[data-reveal="pending"] .hm-horizon :is([data-tone="down"], [data-tone="flat"]) .hm-col i {
+  clip-path: inset(0 0 100% 0);
+}
+
+.hm-band[data-reveal="pending"] .hm-col-value {
+  opacity: 0;
+}
+
+.hm-col-id {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--sp-2);
+  padding-bottom: 7px;
+}
+
+/* Owned: a gold line under the ticker (named once, in the head's legend). */
+.hm-horizon [data-own] .hm-col-id::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--fx-own);
+}
+
+.hm-col-price {
+  font-size: var(--fs-label);
+  color: var(--fx-muted);
+}
+
+/* ---- News and the next lesson, side by side ----------------------------------------- */
+
+.hm-duo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  align-items: start;
+  gap: 72px;
+  padding: 0 var(--gutter);
+}
+
+.hm-duo > .hm-band {
+  padding-inline: 0;
+}
+
+/* ---- Market news: a lead story and a timeline ------------------------------------ */
+
+.hm-feed {
+  display: grid;
+  gap: var(--sp-8);
+}
+
+/* The lead: the headline at reading size beside its evidence (which way the story pushed, and the price's path since). */
+.hm-lead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "meta impact"
+    "headline impact";
+  align-items: start;
+  gap: var(--sp-5) var(--sp-10);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-2) var(--sp-8);
+  border: 0;
+  border-bottom: 1px solid var(--fx-line);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--t-quick) ease,
+    opacity var(--t-quick) ease;
+}
+
+.hm-lead-meta {
+  grid-area: meta;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.hm-lead-asset {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.hm-lead-asset > span {
+  display: grid;
+  gap: 4px;
+}
+
+.hm-lead-asset small {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0 var(--sp-2);
+  font-size: var(--fs-label);
+  color: var(--fx-muted);
+}
+
+.hm-lead-asset em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--fx-own);
+}
+
+.hm-lead-time,
+.hm-wire-time {
+  display: grid;
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-lead-time {
+  justify-items: end;
+}
+
+.hm-lead-time b,
+.hm-wire-time b {
+  font-size: var(--fs-row);
+  font-weight: 600;
+  color: var(--fx-text);
+}
+
+.hm-lead-time small,
+.hm-wire-time small {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+}
+
+.hm-lead-headline {
+  grid-area: headline;
+  max-width: 30ch;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+  color: var(--fx-text);
+  text-wrap: balance;
+}
+
+.hm-lead-impact {
+  grid-area: impact;
+  display: grid;
+  align-content: start;
+  gap: var(--sp-3);
+  padding-left: var(--sp-8);
+  border-left: 1px solid var(--fx-line);
+}
+
+.hm-push {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.hm-trace {
+  display: block;
+  width: 100%;
+  height: 72px;
+}
+
+.hm-trace polyline {
+  fill: none;
+  stroke: var(--fx-muted);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.hm-trace[data-tone="up"] polyline {
+  stroke: var(--fx-up);
+}
+
+.hm-trace[data-tone="down"] polyline {
+  stroke: var(--fx-down);
+}
+
+/* The price when the story broke: the level the line leaves from. */
+.hm-trace-level {
+  stroke: var(--fx-control);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.hm-moved {
+  display: grid;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-moved b {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.hm-moved small {
+  font-size: var(--fs-label);
+  color: var(--fx-muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hm-lead:hover {
+    background: rgba(14, 21, 54, 0.45);
+  }
+
+  .hm-lead:hover .hm-lead-headline,
+  .hm-wire button:hover .hm-wire-headline {
+    text-decoration: underline;
+    text-decoration-color: var(--fx-control);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 5px;
+  }
+}
+
+.hm-lead:active {
+  background: var(--fx-raised);
+}
+
+/* The timeline: time, a dot on the rail coloured by the story's push, the asset and headline, then the move since. */
+.hm-wire {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hm-wire::before {
+  content: "";
+  position: absolute;
+  top: var(--sp-6);
+  bottom: var(--sp-6);
+  left: calc(var(--sp-2) + 76px + var(--sp-4) + 4px);
+  width: 1px;
+  background: var(--fx-line);
+}
+
+.hm-wire button {
+  display: grid;
+  grid-template-columns: 76px 9px minmax(0, 1fr) 132px;
+  align-items: start;
+  gap: 0 var(--sp-4);
+  width: 100%;
+  padding: var(--sp-5) var(--sp-2);
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--t-quick) ease,
+    opacity var(--t-quick) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hm-wire button:hover {
+    background: rgba(14, 21, 54, 0.45);
+  }
+}
+
+.hm-wire button:active {
+  background: var(--fx-raised);
+}
+
+.hm-wire-dot {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  margin-top: 6px;
+  background: var(--fx-muted);
+  box-shadow: 0 0 0 4px var(--fx-ground); /* taste-skill-ignore: cuts the rail around the dot, not a shadow */
+}
+
+.hm-wire-dot[data-tone="up"] {
+  background: var(--fx-up);
+}
+
+.hm-wire-dot[data-tone="down"] {
+  background: var(--fx-down);
+}
+
+.hm-wire-body {
+  display: grid;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.hm-wire-asset {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.hm-wire-headline {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--fx-text);
+}
+
+.hm-wire-impact {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.hm-wire-impact small {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+.hm-wire-impact small[data-tone] {
+  font-weight: 600;
+}
+
+.hm-wire-impact b {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* Pointing at a market column lights its stories; the rest step back. */
+.hm-feed[data-focus] :is(.hm-lead, .hm-wire button):not([data-match]) {
+  opacity: 0.42;
+}
+
+/* ---- The next lesson: the module's own art, the lesson, its progress --------------- */
+
+.hm-lesson {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  grid-template-areas:
+    "art body"
+    "foot foot";
+  align-items: start;
+  gap: var(--sp-5);
+  margin-top: 112px;
+  padding: var(--sp-6);
+  border: 1px solid var(--fx-line);
+  border-top: 2px solid var(--fx-own);
+  background: var(--fx-panel);
+  transition:
+    opacity var(--t-panel) var(--ease-out) 220ms,
+    transform var(--t-panel) var(--ease-out) 220ms;
+}
+
+/* Beside the news on a desktop, the lesson stays in view while the stories are read. */
+@media (min-width: 1180px) {
+  .hm-lesson {
+    position: sticky;
+    top: var(--sp-8);
+  }
+}
+
+.hm-lesson[data-reveal="pending"] {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* The module's tile from the Learning Hub, cropped to its frame, its glow left outside. */
+.hm-lesson-art {
+  grid-area: art;
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: clip;
+}
+
+.hm-lesson-art img {
+  position: absolute;
+  max-width: none;
+  height: auto;
+}
+
+.hm-lesson-body {
+  grid-area: body;
+  display: grid;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.hm-lesson-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--fx-muted);
+}
+
+.hm-lesson-head .px {
+  font-size: max(9.6px, round(12px, var(--snap)));
+  text-transform: uppercase;
+  color: var(--fx-own);
+}
+
+.hm-lesson-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  justify-self: start;
+  min-height: 32px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--fx-text);
+  transition: color var(--t-quick) ease;
+}
+
+.hm-lesson-link .sim-glyph {
+  flex: none;
+  transition: transform var(--t-quick) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hm-lesson-link:hover {
+    color: var(--fx-buy-text);
+  }
+
+  .hm-lesson-link:hover .sim-glyph {
+    transform: translateX(3px);
+  }
+}
+
+.hm-lesson-link:active .sim-glyph {
+  transform: translateX(1px);
+}
+
+.hm-lesson-why {
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--fx-muted);
+}
+
+.hm-lesson-foot {
+  grid-area: foot;
+  display: grid;
+  gap: var(--sp-2);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--fx-rule);
+}
+
+/* Progress as one pixel step per lesson in the module, gold when finished. */
+.hm-steps {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 4px;
+  height: 10px;
+}
+
+.hm-steps i {
+  background: var(--fx-lift);
+}
+
+.hm-steps i[data-done] {
+  background: var(--fx-own);
+}
+
+.hm-lesson-foot > small {
+  font-size: var(--fs-label);
+  font-variant-numeric: tabular-nums;
+  color: var(--fx-muted);
+}
+
+.hm-milestone {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+.hm-milestone b {
+  font-weight: 600;
+  color: var(--fx-muted);
+}
+
+/* ---- The ledger: every virtual trade ------------------------------------------------ */
+
+/* Set apart from the rest of the page: the sunk ground, edge to edge, like the back of a ledger book. */
+.hm-ledger {
+  margin-top: 112px;
+  padding-bottom: 96px;
+  border-top: 1px solid var(--fx-line);
+  background: var(--fx-sunk);
+}
+
+.hm-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-c-when {
+  width: 16%;
+}
+
+.hm-c-price {
+  width: 12%;
+}
+
+.hm-c-cash {
+  width: 14%;
+}
+
+.hm-c-real {
+  width: 13%;
+}
+
+.hm-c-after {
+  width: 14%;
+}
+
+.hm-table th {
+  padding: 0 var(--sp-4) var(--sp-3);
+  border-bottom: 1px solid var(--fx-line);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  text-align: left;
+  color: var(--fx-faint);
+}
+
+.hm-table td {
+  padding: var(--sp-5) var(--sp-4);
+  border-top: 1px solid var(--fx-rule);
+  font-size: var(--fs-row);
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.hm-table tbody tr:first-child td {
+  border-top: 0;
+}
+
+.hm-table .hm-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.hm-table tbody tr {
+  transition: background-color var(--t-quick) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hm-table tbody tr:hover {
+    background: rgba(14, 21, 54, 0.5);
+  }
+}
+
+.hm-when b,
+.hm-when small {
+  display: block;
+}
+
+.hm-when b {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--sp-2);
+  font-weight: 600;
+  color: var(--fx-text);
+}
+
+.hm-when small {
+  margin-top: 3px;
+  font-size: var(--fs-label);
+  color: var(--fx-faint);
+}
+
+.hm-latest {
+  margin-left: var(--sp-1);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  color: var(--fx-own);
+}
+
+/* The latest trade: the gold edge, and a faint warmth on its row. */
+.hm-table tr[data-latest] {
+  background: rgba(244, 182, 58, 0.04);
+}
+
+.hm-table tr[data-latest] td:first-child {
+  box-shadow: inset 2px 0 0 var(--fx-own); /* taste-skill-ignore: an inset edge marking the latest row, not a shadow */
+}
+
+.hm-order {
+  white-space: nowrap;
+}
+
+.hm-order > * {
+  vertical-align: middle;
+}
+
+.hm-order .sim-mark {
+  display: inline-block;
+  margin: 0 var(--sp-2) 0 var(--sp-3);
+}
+
+.hm-order b {
+  font-weight: 600;
+  color: var(--fx-text);
+}
+
+.hm-side-tag {
+  display: inline-block;
+  min-width: 62px;
+  padding: 4px var(--sp-2);
+  background: #0f2350;
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  text-align: center;
+  color: #a8c8ff;
+}
+
+.hm-side-tag[data-side="sell"] {
+  background: #23174d;
+  color: #d0bbff;
+}
+
+.hm-cash {
+  font-weight: 600;
+  color: var(--fx-muted);
+}
+
+.hm-cash[data-tone="up"] {
+  color: var(--fx-up);
+}
+
+.hm-real span[data-tone] {
+  font-weight: 600;
+}
+
+.hm-na {
+  color: var(--fx-faint);
+}
+
+.hm-after {
+  font-weight: 600;
+  color: var(--fx-text);
+}
+
+/* A trade made on this visit arrives once. */
+.hm-table tr[data-new] {
+  animation: hm-arrive var(--t-panel) var(--ease-out);
+}
+
+@keyframes hm-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* ---- Wide desktops ---------------------------------------------------------------- */
+
+@media (min-width: 1680px) {
+  .hm-duo {
+    grid-template-columns: minmax(0, 1fr) 400px;
+  }
+}
+
+/* ---- Tablets and small laptops ----------------------------------------------------- */
+
+@media (max-width: 1179px) {
+  .hm-band {
+    padding-top: 88px;
+  }
+
+  .hm-chart {
+    --reach: 92px;
+
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .hm-chart::before,
+  .hm-chart::after {
+    left: 48px;
+  }
+
+  .hm-col i {
+    width: 22px;
+    margin-left: -11px;
+  }
+
+  .hm-col-value {
+    font-size: var(--fs-label);
+  }
+
+  .hm-duo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .hm-lesson {
+    max-width: 640px;
+    margin-top: 72px;
+  }
+
+  .hm-ledger {
+    margin-top: 88px;
+  }
+
+  .hm-table th,
+  .hm-table td {
+    padding-inline: var(--sp-3);
+  }
+
+  .hm-c-when {
+    width: 17%;
+  }
+
+  .hm-c-price {
+    width: 13%;
+  }
+
+  .hm-c-cash,
+  .hm-c-after {
+    width: 15%;
+  }
+
+  .hm-order .sim-mark {
+    margin-left: var(--sp-2);
+  }
+}
+
+/* ---- Phones ----------------------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .hm-band {
+    gap: var(--sp-6);
+    padding-top: 64px;
+  }
+
+  .hm-band-head h2 {
+    font-size: round(down, 24px, var(--snap));
+  }
+
+  .hm-band-head > p {
+    font-size: var(--fs-body);
+  }
+
+  /* The horizon turns on its side: one row per asset, the bar out from a centre line (right for up, left for down), its change at its end. */
+  .hm-chart {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hm-chart::before,
+  .hm-chart::after,
+  .hm-axis,
+  .hm-horizon::before {
+    display: none;
+  }
+
+  .hm-horizon {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hm-horizon li + li {
+    border-top: 1px solid var(--fx-rule);
+  }
+
+  .hm-horizon button {
+    grid-template-columns: 82px minmax(0, 1fr) 74px;
+    grid-template-rows: auto;
+    grid-template-areas: "id bar price";
+    justify-items: stretch;
+    align-items: center;
+    gap: var(--sp-3);
+    min-height: 52px;
+    padding: var(--sp-2) var(--sp-1);
+  }
+
+  .hm-col {
+    --row-span: calc(50% - 58px);
+
+    grid-area: bar;
+    height: 16px;
+  }
+
+  .hm-col::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    left: 50%;
+    width: 1px;
+    background: var(--fx-control);
+  }
+
+  .hm-col i {
+    top: 2px;
+    bottom: auto;
+    width: var(--row-span);
+    height: 12px;
+    margin-left: 0;
+  }
+
+  .hm-horizon [data-tone="up"] .hm-col i {
+    bottom: auto;
+    left: calc(50% + 2px);
+    mask: repeating-linear-gradient(to right, #000 0 6px, transparent 6px 8px); /* taste-skill-ignore: a hard-edged mask that cuts the bar into pixel blocks, not a visible gradient */
+    clip-path: inset(0 calc((1 - var(--h)) * 100%) 0 0);
+  }
+
+  .hm-horizon :is([data-tone="down"], [data-tone="flat"]) .hm-col i {
+    top: 2px;
+    right: calc(50% + 2px);
+    left: auto;
+    mask: repeating-linear-gradient(to left, #000 0 6px, transparent 6px 8px); /* taste-skill-ignore: a hard-edged mask that cuts the bar into pixel blocks, not a visible gradient */
+    clip-path: inset(0 0 0 calc((1 - var(--h)) * 100%));
+  }
+
+  .hm-band[data-reveal="pending"] .hm-horizon [data-tone="up"] .hm-col i {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .hm-band[data-reveal="pending"] .hm-horizon :is([data-tone="down"], [data-tone="flat"]) .hm-col i {
+    clip-path: inset(0 0 0 100%);
+  }
+
+  .hm-col-value {
+    top: 50%;
+    right: auto;
+    left: auto;
+    font-size: var(--fs-label);
+    transform: translateY(-50%);
+  }
+
+  .hm-horizon [data-tone="up"] .hm-col-value {
+    bottom: auto;
+    left: calc(50% + var(--row-span) * var(--h) + 8px);
+  }
+
+  .hm-horizon [data-tone="down"] .hm-col-value {
+    top: 50%;
+    right: calc(50% + var(--row-span) * var(--h) + 8px);
+  }
+
+  .hm-horizon [data-tone="flat"] .hm-col-value {
+    bottom: auto;
+    left: calc(50% + 8px);
+  }
+
+  .hm-col-id {
+    grid-area: id;
+    justify-self: start;
+    margin-top: 0;
+  }
+
+  .hm-col-price {
+    grid-area: price;
+    text-align: right;
+  }
+
+  .hm-lead {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "meta"
+      "headline"
+      "impact";
+    padding-inline: 0;
+  }
+
+  .hm-lead-headline {
+    font-size: 22px;
+  }
+
+  .hm-lead-impact {
+    padding-left: 0;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--fx-rule);
+    border-left: 0;
+  }
+
+  .hm-wire::before {
+    left: calc(var(--sp-1) + 56px + var(--sp-3) + 4px);
+  }
+
+  .hm-wire button {
+    grid-template-columns: 56px 9px minmax(0, 1fr);
+    grid-template-areas:
+      "time dot body"
+      "time dot impact";
+    gap: var(--sp-2) var(--sp-3);
+    padding: var(--sp-4) var(--sp-1);
+  }
+
+  .hm-wire-time {
+    grid-area: time;
+  }
+
+  .hm-wire-dot {
+    grid-area: dot;
+  }
+
+  .hm-wire-body {
+    grid-area: body;
+  }
+
+  .hm-wire-impact {
+    grid-area: impact;
+    grid-auto-flow: column;
+    justify-content: start;
+    justify-items: start;
+    align-items: baseline;
+    gap: var(--sp-2);
+    text-align: left;
+  }
+
+  .hm-wire-headline,
+  .hm-wire-impact b {
+    font-size: var(--fs-title);
+  }
+
+  .hm-lesson {
+    grid-template-columns: 72px minmax(0, 1fr);
+    margin-top: 56px;
+    padding: var(--sp-5);
+  }
+
+  .hm-lesson-link {
+    font-size: 19px;
+  }
+
+  .hm-ledger {
+    margin-top: 64px;
+    padding-bottom: var(--sp-12);
+  }
+
+  /* The ledger's rows become entries: the order and its cash on the first line, the rest beneath, each named. */
+  .hm-table colgroup,
+  .hm-table thead {
+    display: none;
+  }
+
+  .hm-table,
+  .hm-table tbody {
+    display: block;
+  }
+
+  .hm-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px var(--sp-3);
+    padding: var(--sp-4) var(--sp-2);
+    border-top: 1px solid var(--fx-rule);
+  }
+
+  .hm-table tbody tr:first-child {
+    border-top: 0;
+  }
+
+  .hm-table td {
+    padding: 0;
+    border: 0;
+  }
+
+  .hm-table td.hm-order {
+    grid-column: 1;
+    grid-row: 1;
+    white-space: normal;
+  }
+
+  .hm-table td.hm-cash {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .hm-table td.hm-when {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .hm-table td.hm-when b,
+  .hm-table td.hm-when small {
+    display: inline;
+    font-size: var(--fs-label);
+  }
+
+  .hm-table td.hm-when small {
+    margin-left: var(--sp-2);
+  }
+
+  .hm-table td.hm-num:not(.hm-cash) {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    grid-column: 1 / -1;
+    font-size: var(--fs-label);
+  }
+
+  .hm-table td.hm-num:not(.hm-cash)::before {
+    content: attr(data-label);
+    color: var(--fx-faint);
+  }
+
+  /* A buy locks in nothing: on a phone its empty Realised line is left out rather than shown as a dash. */
+  .hm-table td.hm-real:has(.hm-na) {
+    display: none;
+  }
+
+  .hm-order .sim-mark {
+    margin-left: var(--sp-2);
+  }
+
+  .hm-table tr[data-latest] td:first-child {
+    box-shadow: none; /* taste-skill-ignore: removes the desktop row edge */
+  }
+
+  .hm-table tr[data-latest] {
+    box-shadow: inset 2px 0 0 var(--fx-own); /* taste-skill-ignore: an inset edge marking the latest entry, not a shadow */
+  }
+}
+
+/* ---- Reduced motion: nothing travels; sections and rows appear in place ------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .hm-band-body,
+  .hm-lesson {
+    transform: none !important;
+  }
+
+  .hm-col i {
+    transition-property: opacity;
+    transition-delay: 0ms;
+  }
+
+  .hm-col-value {
+    transition-delay: 0ms;
+  }
+
+  .hm-table tr[data-new] {
+    animation-name: sim-fade;
+    animation-duration: 160ms;
+  }
+
+  .hm-lesson-link .sim-glyph {
+    transition: none;
+  }
+}

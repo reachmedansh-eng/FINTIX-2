@@ -1,0 +1,234 @@
+/* ------------------------------------------------------------------ */
+/* FINTIX — global tokens and base                                     */
+/* The palette is taken from the supplied artwork and wordmark, which   */
+/* are the colour authority for everything drawn on top of them.        */
+/* ------------------------------------------------------------------ */
+
+/* Retropix's @font-face is written by the root layout, so its URL carries the path the site is served from. */
+
+:root {
+  /* Foundation */
+  --ink: #02031a;
+  --navy: #000a30;
+  --navy-lit: #0a1a5c;
+  --charcoal: #15151f;
+
+  /* Light */
+  --white: #f4f2ec;
+  --grey: #aab0c8;
+  --grey-dim: #6a7096;
+
+  /* Accents */
+  --blue: #2a7cf6;
+  --cyan: #2fc0ff;
+  --purple: #8f5bff;
+  --gold: #f4b63a;
+  --gold-deep: #cd770f;
+
+  /* Type */
+  --font-pixel: "Retropix", "Courier New", monospace;
+  --font-text: var(--font-grotesk, "Space Grotesk"), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /*
+   * Retropix is drawn on a 12-unit pixel grid, with advances that sit 0.445px
+   * off it. --px-track and --px-word put every glyph and word space back on
+   * whole pixels. --snap is one grid step in device pixels: any Retropix size
+   * that is a multiple of it renders crisp. (--dpr is set from script.)
+   */
+  --dpr: 1;
+  --snap: calc(12px / var(--dpr));
+  --px-track: 0.0463em;
+  --px-word: 0.0371em;
+
+  --gutter: clamp(20px, 3.75vw, 72px);
+
+  /*
+   * Motion. Three layers, never competing: interaction (acknowledge input),
+   * state (something changed place or mode) and consequence (a real
+   * simulation event, shown once). Financial figures never overshoot.
+   */
+  --t-press: 120ms;
+  --t-quick: 160ms;
+  --t-base: 240ms;
+  --t-panel: 300ms;
+  --t-count: 450ms;
+  --t-event: 800ms;
+  /* Strong curves: UI responds at once and settles softly; nothing on these screens eases in. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /*
+   * The working screens' system (Home, the trading desk, the tutorial).
+   *
+   * Spacing runs on a 4px base. Surfaces are told apart by tone steps on the
+   * navy foundation, not by borders and shadows: sunk (inputs, wells) sits
+   * below the ground, panel one step above it (framed instruments), raised
+   * one more (hover, the active row, layered consoles). Lines come in three
+   * strengths: rule (between rows), line (a panel's edge) and control (an
+   * outline that says "press me"). Every text tier passes 4.5:1 on every
+   * surface it sits on.
+   *
+   * Corners are square everywhere: the pixel heritage of the city and the
+   * wordmark. Variety comes from surface, proportion and density instead.
+   *
+   * Colour has jobs, never decoration. The accent blue is the one interface
+   * selection mark (a 2px line under the chosen tab, range, side or asset),
+   * the focus ring and the primary key. Gold means "yours": the share you
+   * have invested, the holding you have selected in the city, progress
+   * through the lessons. Purple is selling. Green and red say gained or lost
+   * and always travel with a sign.
+   */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+
+  --fs-meta: 12px;
+  --fs-label: 13px;
+  --fs-body: 14px;
+  --fs-row: 15px;
+  --fs-title: 16px;
+  --fs-figure: 20px;
+  --fs-price: 30px;
+  --fs-answer: 40px;
+
+  --fx-sunk: #01020e;
+  --fx-ground: var(--ink);
+  --fx-panel: #070b24;
+  --fx-raised: #0e1536;
+  --fx-lift: #141d45;
+
+  --fx-rule: #121835;
+  --fx-line: #1a2246;
+  /* A control's outline must read as a boundary: 3:1 or better on every surface it sits on. */
+  --fx-control: #4d5ea6;
+  --fx-control-hi: #6a7bc4;
+
+  --fx-text: var(--white);
+  --fx-muted: #aab2d4;
+  --fx-faint: #8089b4;
+
+  --fx-accent: var(--blue);
+  --fx-own: var(--gold);
+  /* Older name: the selected holding (gold, because it is yours). */
+  --fx-select: var(--fx-own);
+  --fx-buy: #1d6ae0;
+  --fx-buy-hi: #2a7cf6;
+  --fx-buy-edge: #0f4fb8;
+  --fx-buy-text: #7fb0ff;
+  --fx-sell: #7a45f0;
+  --fx-sell-hi: #8a57fa;
+  --fx-sell-edge: #5a2cc4;
+  --fx-sell-text: #b89bff;
+  --fx-up: #43c98b;
+  --fx-down: #f16c79;
+  --fx-up-tint: #0c2421;
+  --fx-down-tint: #28111d;
+
+  --fx-control-h: 36px;
+  --fx-key-h: 46px;
+  --fx-row-h: 52px;
+
+  /* Only what floats casts a shadow: a tooltip, a chart readout. */
+  --fx-float: 0 14px 32px rgba(0, 0, 2, 0.55);
+}
+
+/* Reduced motion: nothing travels, counts or drifts; colour and opacity still change, briefly, so state stays legible. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-press: 0ms;
+    --t-quick: 120ms;
+    --t-base: 120ms;
+    --t-panel: 0ms;
+    --t-count: 0ms;
+    --t-event: 0ms;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--ink);
+  color-scheme: dark;
+  /*
+   * A page that scrolls is one scrollbar narrower than a page that does not,
+   * which moved the navigation bar and every centred layout between routes.
+   * The scrollbar's space is kept on every page, so the width never changes.
+   */
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #26346e var(--ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--white);
+  font-family: var(--font-text);
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  font-weight: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* Pixel type. Sizes must be multiples of --snap. */
+.px {
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  letter-spacing: var(--px-track);
+  word-spacing: var(--px-word);
+  font-kerning: none;
+  font-variant-ligatures: none;
+  text-transform: uppercase;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}

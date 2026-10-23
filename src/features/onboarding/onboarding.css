@@ -1,0 +1,719 @@
+/* ------------------------------------------------------------------ */
+/* FINTIX onboarding                                                   */
+/* One fixed stage (the world + the words over it) and a tall track     */
+/* that exists only to give the page its scroll length.                 */
+/* ------------------------------------------------------------------ */
+
+.onb {
+  --onb-length: 1000;
+  /* Headline sizes, snapped to Retropix's pixel grid. */
+  --h1: round(nearest, clamp(36px, 5.6vw, 132px), var(--snap));
+  --h2: round(nearest, clamp(30px, 3.75vw, 96px), var(--snap));
+  --h3: round(nearest, clamp(24px, 3.1vw, 72px), var(--snap));
+  --label: round(nearest, clamp(18px, 1.25vw, 24px), var(--snap));
+  --shadow: 0 0.04em 0 rgba(2, 3, 26, 0.7), 0 0 0.9em rgba(2, 3, 26, 0.75), 0 0 2.4em rgba(2, 3, 26, 0.5);
+  position: relative;
+  background: #000;
+}
+
+.onb-track {
+  height: calc(var(--onb-length) * 1svh);
+}
+
+.onb-stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.onb-world {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.onb-skip {
+  position: fixed;
+  z-index: 20;
+  top: 14px;
+  left: 14px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--white);
+  transform: translateY(-200%);
+}
+
+.onb-skip:focus-visible {
+  transform: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* The wordmark: the supplied file, framed to its visible artwork       */
+/* ------------------------------------------------------------------ */
+
+.onb-mark,
+.onb-hud-mark {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: var(--w);
+  height: calc(var(--w) * 137 / 573);
+}
+
+.onb-mark img,
+.onb-hud-mark img {
+  position: absolute;
+  left: calc(var(--w) * -110 / 573);
+  top: calc(var(--w) * -95 / 573);
+  width: calc(var(--w) * 790 / 573);
+  max-width: none;
+  height: auto;
+  user-select: none;
+}
+
+.onb-mark {
+  --w: calc(573px * var(--mark-k, 1));
+  opacity: 0;
+}
+
+/* Shown at a whole number of device pixels per pixel, so it stays hard-edged. */
+.onb-mark img {
+  image-rendering: pixelated;
+}
+
+/* ------------------------------------------------------------------ */
+/* Scenes                                                              */
+/* ------------------------------------------------------------------ */
+
+.onb-scenes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.onb-float {
+  position: absolute;
+  inset: 0;
+}
+
+.onb-scene {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  opacity: 0;
+}
+
+/*
+ * A soft fall of shadow under the words. Never a box: it has no edge, and it
+ * overhangs the stage so the layer's slight lean can never uncover one.
+ */
+.onb-shade {
+  position: absolute;
+  inset: -32px;
+  opacity: 0;
+}
+
+.onb-copy {
+  position: absolute;
+}
+
+.onb-title {
+  font-size: var(--h1);
+  line-height: 1;
+  color: var(--white);
+  text-shadow: var(--shadow);
+  white-space: nowrap;
+}
+
+.onb-title-small {
+  font-size: var(--h3);
+}
+
+.onb-line {
+  display: block;
+  overflow: clip;
+  /* Room for the type's shadow, which the clip would otherwise cut off. */
+  overflow-clip-margin: 0.5em;
+  padding-bottom: 0.06em;
+}
+
+.onb-line-in {
+  display: block;
+  will-change: transform;
+}
+
+.onb-word {
+  display: inline-block;
+}
+
+.onb-body {
+  max-width: 34ch;
+  margin-top: 1.5em;
+  font-size: clamp(17px, 1.2vw, 23px);
+  line-height: 1.5;
+  font-weight: 400;
+  color: rgba(244, 242, 236, 0.9);
+  text-shadow: 0 0 1em rgba(2, 3, 26, 0.9), 0 0 2.4em rgba(2, 3, 26, 0.7);
+  text-wrap: pretty;
+}
+
+/* ---- 01 FINTIX ---------------------------------------------------- */
+
+.onb-title-card {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-bottom: 5vh;
+}
+
+/* The skyline is at its brightest right behind the wordmark: a pool of night keeps the tagline readable. */
+.onb-title-card::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 2.5vh);
+  width: min(128vw, 2400px);
+  height: 72vh;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(2, 3, 26, 0.74) 0%, rgba(2, 3, 26, 0.56) 34%, rgba(2, 3, 26, 0) 100%);
+}
+
+.onb-cue {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(20px, 5vh, 56px);
+  display: flex;
+  justify-content: center;
+}
+
+.onb-cue-in {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7em;
+  font-size: var(--label);
+  line-height: 1;
+  color: var(--white);
+  text-shadow: var(--shadow);
+  opacity: 0;
+}
+
+.onb-cue-arrow {
+  color: var(--cyan);
+  animation: onb-cue 1.2s steps(4) infinite;
+}
+
+@keyframes onb-cue {
+  from {
+    transform: translateY(-0.25em);
+  }
+  to {
+    transform: translateY(0.4em);
+  }
+}
+
+/* ---- 02 UNDERSTAND ------------------------------------------------ */
+
+.onb-understand .onb-copy {
+  left: var(--gutter);
+  bottom: 11vh;
+}
+
+.onb-understand .onb-shade {
+  background: linear-gradient(to top, rgba(2, 3, 26, 0.82) 0%, rgba(2, 3, 26, 0.5) 30%, rgba(2, 3, 26, 0) 64%);
+}
+
+/* ---- 03 LEARN ----------------------------------------------------- */
+
+.onb-learn .onb-copy {
+  left: var(--gutter);
+  top: 13.5vh;
+}
+
+.onb-concepts {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.onb-concept {
+  position: absolute;
+  visibility: hidden;
+}
+
+.onb-concept-word {
+  display: block;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--white);
+  text-shadow: var(--shadow);
+}
+
+.onb-concept-note {
+  display: block;
+  margin-top: 0.9em;
+  font-size: clamp(15px, 1.05vw, 20px);
+  line-height: 1.35;
+  color: var(--cyan);
+  text-shadow: 0 0 1em rgba(2, 3, 26, 0.9);
+  white-space: nowrap;
+}
+
+/* Each concept has its own place and its own scale: a field, not a list. */
+.onb-concept[data-concept="0"] { left: 10vw; top: 36vh; }
+.onb-concept[data-concept="0"] .onb-concept-word { font-size: round(nearest, clamp(48px, 6.9vw, 132px), var(--snap)); }
+.onb-concept[data-concept="1"] { left: 51vw; top: 27vh; }
+.onb-concept[data-concept="1"] .onb-concept-word { font-size: round(nearest, clamp(36px, 5.6vw, 108px), var(--snap)); }
+.onb-concept[data-concept="2"] { left: 29vw; top: 52vh; }
+.onb-concept[data-concept="2"] .onb-concept-word { font-size: round(nearest, clamp(40px, 6.25vw, 120px), var(--snap)); }
+.onb-concept[data-concept="3"] { left: 44vw; top: 69vh; }
+.onb-concept[data-concept="3"] .onb-concept-word { font-size: round(nearest, clamp(28px, 4.4vw, 84px), var(--snap)); }
+.onb-concept[data-concept="4"] { left: 7vw; top: 80vh; }
+.onb-concept[data-concept="4"] .onb-concept-word { font-size: round(nearest, clamp(28px, 4.4vw, 84px), var(--snap)); }
+
+/* ---- 04 CAPITAL --------------------------------------------------- */
+
+.onb-capital .onb-copy {
+  right: 6.5vw;
+  bottom: 11vh;
+}
+
+.onb-capital .onb-title {
+  font-size: var(--h2);
+}
+
+.onb-capital .onb-shade {
+  background: radial-gradient(90% 80% at 100% 100%, rgba(2, 3, 26, 0.85) 0%, rgba(2, 3, 26, 0.5) 40%, rgba(2, 3, 26, 0) 72%);
+}
+
+/* ---- 05 EXPLORE --------------------------------------------------- */
+
+.onb-explore .onb-copy {
+  left: var(--gutter);
+  bottom: 9vh;
+}
+
+.onb-explore .onb-shade {
+  background: radial-gradient(85% 95% at 0% 100%, rgba(2, 3, 26, 0.9) 0%, rgba(2, 3, 26, 0.55) 42%, rgba(2, 3, 26, 0) 74%);
+}
+
+.onb-fragments {
+  position: absolute;
+  right: calc(var(--gutter) + 44px);
+  top: 17vh;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.9em;
+  font-size: var(--label);
+  line-height: 1;
+  text-shadow: var(--shadow);
+}
+
+.onb-fragment {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.9em;
+  color: var(--grey);
+  visibility: hidden;
+}
+
+.onb-fragment-value {
+  min-width: 4.6em;
+  font-family: var(--font-text);
+  font-size: 0.78em;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--grey);
+}
+
+.onb-fragment[data-up] .onb-fragment-value {
+  color: var(--cyan);
+}
+
+/* ---- 06 SIMULATE -------------------------------------------------- */
+
+.onb-simulate .onb-copy {
+  left: 11vw;
+  top: 50%;
+  transform: translateY(-52%);
+}
+
+/* ---- 07 BUILD ----------------------------------------------------- */
+
+.onb-build .onb-copy {
+  left: var(--gutter);
+  bottom: 8vh;
+}
+
+.onb-build .onb-title {
+  font-size: var(--h3);
+}
+
+.onb-build .onb-shade {
+  background: radial-gradient(70% 95% at 0% 100%, rgba(2, 3, 26, 0.92) 0%, rgba(2, 3, 26, 0.6) 42%, rgba(2, 3, 26, 0) 76%);
+}
+
+/* ---- 08 ARRIVE ---------------------------------------------------- */
+
+.onb-arrive .onb-copy {
+  left: var(--gutter);
+  top: 11vh;
+}
+
+.onb-arrive .onb-title {
+  font-size: var(--h3);
+}
+
+.onb-arrive .onb-shade {
+  background:
+    radial-gradient(60% 70% at 0% 12%, rgba(2, 3, 26, 0.86) 0%, rgba(2, 3, 26, 0.45) 46%, rgba(2, 3, 26, 0) 76%),
+    radial-gradient(52% 60% at 100% 100%, rgba(2, 3, 26, 0.82) 0%, rgba(2, 3, 26, 0.4) 48%, rgba(2, 3, 26, 0) 76%);
+}
+
+.onb-action {
+  position: absolute;
+  right: 7vw;
+  bottom: 11vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 18px;
+}
+
+/* The one action. A hard block with stepped corners and a blue offset: pressed, not hovered-over. */
+.onb-enter {
+  --notch: 6px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.6em 0.85em 0.56em 0.95em;
+  font-size: round(nearest, clamp(24px, 2.5vw, 48px), var(--snap));
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--ink);
+  background: var(--white);
+  clip-path: polygon(
+    var(--notch) 0, calc(100% - var(--notch)) 0, calc(100% - var(--notch)) var(--notch), 100% var(--notch),
+    100% calc(100% - var(--notch)), calc(100% - var(--notch)) calc(100% - var(--notch)), calc(100% - var(--notch)) 100%,
+    var(--notch) 100%, var(--notch) calc(100% - var(--notch)), 0 calc(100% - var(--notch)), 0 var(--notch), var(--notch) var(--notch)
+  );
+  pointer-events: auto;
+  cursor: pointer;
+  visibility: hidden;
+  transition: background-color 140ms linear, transform 120ms steps(2);
+}
+
+/* The offset is a filter on a wrapper, because the button's stepped corners clip any shadow of its own. */
+.onb-enter-wrap {
+  display: block;
+  filter: drop-shadow(6px 6px 0 var(--blue));
+  transition: filter 120ms steps(2);
+}
+
+.onb-enter-arrow {
+  transition: transform 220ms steps(4);
+}
+
+.onb-enter:hover,
+.onb-enter:focus-visible {
+  background: var(--cyan);
+}
+
+.onb-enter:hover .onb-enter-arrow,
+.onb-enter:focus-visible .onb-enter-arrow {
+  transform: translateX(0.5em);
+}
+
+.onb-enter-wrap:has(.onb-enter:active) {
+  filter: drop-shadow(0 0 0 var(--blue));
+}
+
+.onb-enter:active {
+  transform: translate(6px, 6px);
+}
+
+.onb-enter:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 3px var(--ink), inset 0 0 0 6px var(--gold);
+}
+
+.onb-enter-note {
+  font-size: clamp(13px, 0.86vw, 15px);
+  line-height: 1.4;
+  color: rgba(244, 242, 236, 0.86);
+  text-shadow: 0 0 1em rgba(2, 3, 26, 0.95), 0 0 2em rgba(2, 3, 26, 0.8);
+  visibility: hidden;
+}
+
+/* ------------------------------------------------------------------ */
+/* The editorial layer                                                 */
+/* ------------------------------------------------------------------ */
+
+.onb-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.onb-hud-mark {
+  --w: clamp(112px, 8.6vw, 168px);
+  position: absolute;
+  left: var(--gutter);
+  top: clamp(18px, 3.8vh, 42px);
+}
+
+.onb-marker {
+  position: absolute;
+  right: calc(var(--gutter) + 44px);
+  top: clamp(20px, 4.2vh, 46px);
+  display: flex;
+  align-items: baseline;
+  font-size: var(--label);
+  line-height: 1;
+  color: var(--white);
+  text-shadow: var(--shadow);
+}
+
+.onb-marker-index {
+  color: var(--cyan);
+}
+
+.onb-marker-total {
+  margin-right: 0.9em;
+  color: var(--grey-dim);
+}
+
+.onb-marker-name {
+  position: relative;
+  display: inline-flex;
+  justify-content: flex-end;
+  overflow: clip;
+  overflow-clip-margin: 0.4em;
+}
+
+.onb-marker-name > span {
+  display: block;
+  white-space: nowrap;
+}
+
+.onb-rail {
+  position: absolute;
+  right: calc(var(--gutter) * 0.5 + 6px);
+  top: 24vh;
+  bottom: 24vh;
+  width: 1px;
+  pointer-events: auto;
+}
+
+.onb-rail-line {
+  position: absolute;
+  inset: 0;
+  background: rgba(170, 176, 200, 0.22);
+}
+
+.onb-rail-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--cyan);
+  transform-origin: 50% 0;
+  transform: scaleY(0);
+}
+
+.onb-rail-stop {
+  position: absolute;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.onb-rail-stop::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: var(--ink);
+  box-shadow: 0 0 0 1px var(--grey-dim);
+  transition: transform 140ms steps(2), background-color 140ms linear, box-shadow 140ms linear;
+}
+
+.onb-rail-stop[data-passed]::before {
+  background: var(--cyan);
+  box-shadow: 0 0 0 1px var(--cyan);
+}
+
+.onb-rail-stop[data-active]::before {
+  background: var(--white);
+  box-shadow: 0 0 0 1px var(--white), 0 0 0 4px rgba(47, 192, 255, 0.35);
+  transform: scale(1.3);
+}
+
+.onb-rail-stop:hover::before {
+  transform: scale(1.6);
+}
+
+/* The scene's name steps out beside its stop when it is pointed at or focused. */
+.onb-rail-stop::after {
+  content: attr(data-name);
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  margin-right: 4px;
+  font-family: var(--font-pixel);
+  font-size: var(--label);
+  line-height: 1;
+  letter-spacing: var(--px-track);
+  white-space: nowrap;
+  color: var(--white);
+  text-shadow: var(--shadow);
+  opacity: 0;
+  transform: translate(8px, -50%);
+  transition: opacity 120ms linear, transform 160ms steps(4);
+  pointer-events: none;
+}
+
+.onb-rail-stop:hover::after,
+.onb-rail-stop:focus-visible::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+.onb-rail-stop:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -6px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Tall screens: the art is cropped to a column, and the words take    */
+/* the lower part of the frame.                                        */
+/* ------------------------------------------------------------------ */
+
+@media (max-aspect-ratio: 1/1) {
+  .onb {
+    --onb-length: 880;
+    --h1: round(nearest, clamp(32px, 10vw, 72px), var(--snap));
+    --h2: round(nearest, clamp(30px, 9.4vw, 66px), var(--snap));
+    --h3: round(nearest, clamp(26px, 8.2vw, 60px), var(--snap));
+    --label: round(nearest, 18px, var(--snap));
+  }
+
+  .onb-title {
+    white-space: normal;
+  }
+
+  .onb-body {
+    font-size: 16px;
+    max-width: 30ch;
+  }
+
+  .onb-understand .onb-copy,
+  .onb-capital .onb-copy,
+  .onb-explore .onb-copy,
+  .onb-build .onb-copy {
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 9svh;
+  }
+
+  .onb-capital .onb-shade,
+  .onb-explore .onb-shade,
+  .onb-build .onb-shade,
+  .onb-understand .onb-shade {
+    background: linear-gradient(to top, rgba(2, 3, 26, 0.92) 0%, rgba(2, 3, 26, 0.62) 34%, rgba(2, 3, 26, 0) 66%);
+  }
+
+  .onb-simulate .onb-copy {
+    left: var(--gutter);
+    right: var(--gutter);
+  }
+
+  .onb-learn .onb-copy {
+    top: 12svh;
+  }
+
+  .onb-concept-note {
+    white-space: normal;
+    max-width: 22ch;
+  }
+
+  .onb-concept[data-concept="0"] { left: 7vw; top: 27svh; }
+  .onb-concept[data-concept="0"] .onb-concept-word { font-size: round(nearest, 17vw, var(--snap)); }
+  .onb-concept[data-concept="1"] { left: 36vw; top: 40svh; }
+  .onb-concept[data-concept="1"] .onb-concept-word { font-size: round(nearest, 13vw, var(--snap)); }
+  .onb-concept[data-concept="2"] { left: 7vw; top: 53svh; }
+  .onb-concept[data-concept="2"] .onb-concept-word { font-size: round(nearest, 12.5vw, var(--snap)); }
+  .onb-concept[data-concept="3"] { left: 7vw; top: 66svh; }
+  .onb-concept[data-concept="3"] .onb-concept-word { font-size: round(nearest, 9.4vw, var(--snap)); }
+  .onb-concept[data-concept="4"] { left: 7vw; top: 78svh; }
+  .onb-concept[data-concept="4"] .onb-concept-word { font-size: round(nearest, 9.4vw, var(--snap)); }
+
+  .onb-fragments {
+    right: var(--gutter);
+    top: 12svh;
+  }
+
+  .onb-arrive .onb-copy {
+    top: 6.5svh;
+  }
+
+  .onb-arrive .onb-shade {
+    background:
+      linear-gradient(to bottom, rgba(2, 3, 26, 0.88) 0%, rgba(2, 3, 26, 0.5) 26%, rgba(2, 3, 26, 0) 46%),
+      linear-gradient(to top, rgba(2, 3, 26, 0.9) 0%, rgba(2, 3, 26, 0.5) 22%, rgba(2, 3, 26, 0) 40%);
+  }
+
+  .onb-action {
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 7svh;
+    align-items: flex-start;
+  }
+
+  .onb-enter {
+    font-size: round(nearest, 30px, var(--snap));
+  }
+
+  .onb-marker {
+    right: var(--gutter);
+  }
+
+  .onb-rail {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onb-cue-arrow {
+    animation: none;
+  }
+
+  .onb-enter,
+  .onb-enter-arrow,
+  .onb-enter-wrap,
+  .onb-rail-stop::before {
+    transition: none;
+  }
+}
