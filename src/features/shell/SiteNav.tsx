@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { auth } from "@/features/auth/authClient";
+import { requestTour } from "@/features/tour/Tour";
 import "./site-nav.css";
 import { asset } from "@/lib/asset";
 
@@ -75,7 +76,7 @@ export function SiteNav({
       </Link>
       <nav className="nav-areas" aria-label="FINTIX">
         {AREAS.map((entry) => (
-          <Link key={entry.area} className="nav-area" href={entry.href} aria-current={entry.area === active ? "page" : undefined}>
+          <Link key={entry.area} className="nav-area" data-area={entry.area} href={entry.href} aria-current={entry.area === active ? "page" : undefined}>
             {entry.label}
           </Link>
         ))}
@@ -88,6 +89,10 @@ export function SiteNav({
         {menu ? (
           <div className="nav-menu" role="menu" onClick={(event) => (event.target as HTMLElement).closest("[role=menuitem]") && setMenu(false)}>
             {children}
+            {/* Home runs the tour where it is; from anywhere else, Home opens with it. */}
+            <button type="button" role="menuitem" onClick={() => (active === "home" ? requestTour() : router.push("/home?tour"))}>
+              Tour FINTIX with Neo
+            </button>
             <Link role="menuitem" href="/">
               Replay the intro
             </Link>

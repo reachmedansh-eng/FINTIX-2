@@ -5,10 +5,10 @@ import { useGSAP } from "@gsap/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { ArrowRight } from "@/features/onboarding/ui/Glyphs";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 import { useReducedMotion } from "@/lib/useReducedMotion";
-import { Ambient } from "./Ambient";
 import { auth, rules, type AuthField, type Session } from "./authClient";
-import { ROOM, framesFor, glassIn } from "./frame";
+import { ROOM, ROOM_SHOWN, framesFor, glassIn } from "./frame";
 import { Market } from "./Market";
 import "./credentials.css";
 import "./live.css";
@@ -20,7 +20,7 @@ gsap.registerPlugin(useGSAP);
 export const AFTER_AUTH_ROUTE = "/home";
 
 type Mode = "signin" | "create";
-type Busy = "signin" | "create" | "google" | "reset" | null;
+type Busy = "signin" | "create" | "google" | "reset" | "test" | null;
 type Values = { name: string; email: string; password: string; confirm: string };
 type Errors = Partial<Record<keyof Values, string>>;
 type Notice = { tone: "info" | "error"; text: string } | null;
@@ -59,6 +59,8 @@ export function Credentials() {
   const leaving = useRef(false);
   const router = useRouter();
   const reduced = useReducedMotion();
+  // False on the server and on the first paint: the room arrives once the page knows it has space for it.
+  const roomShown = useMediaQuery(ROOM_SHOWN);
   const id = useId();
 
   const [mode, setMode] = useState<Mode>("signin");
@@ -116,10 +118,11 @@ export function Credentials() {
       const ui = root.current?.querySelector(".auth-ui");
       if (!veil || !ui) return;
       const wake = () => root.current?.setAttribute("data-on", "true");
-      if (reduced) {
+      // Phones and upright screens open straight onto the sign-in: no room, no move towards the monitor.
+      if (reduced || framesFor(window.innerWidth, window.innerHeight).inside) {
         view.current.near = 1;
         frame();
-        gsap.to(veil, { autoAlpha: 0, duration: 0.4, onComplete: wake });
+        gsap.to(veil, { autoAlpha: 0, duration: reduced ? 0.4 : 0.3, ease: "power1.out", onComplete: wake });
         return;
       }
       gsap
@@ -176,13 +179,32 @@ export function Credentials() {
       };
       // The push runs on animation frames, which stall in a background tab or on a busy main thread,
       // so a timer set to the push's length (plus a little) takes the visitor on if it hasn't ended.
-      window.setTimeout(go, (hold + (reduced ? 0.3 : 0.8)) * 1000 + 400);
+      // Only where the room is on screen does the view push into the monitor; elsewhere the page simply goes to ink.
+      const still = reduced || framesFor(window.innerWidth, window.innerHeight).inside;
+      window.setTimeout(go, (hold + (still ? 0.3 : 0.8)) * 1000 + 400);
       const timeline = gsap.timeline({ delay: hold, onComplete: go });
-      if (!reduced) timeline.to(view.current, { push: 1, duration: 0.8, ease: "power3.in", onUpdate: frame }, 0);
-      timeline.to(veil, { autoAlpha: 1, duration: reduced ? 0.3 : 0.45, ease: "none" }, reduced ? 0 : 0.35);
+      if (!still) timeline.to(view.current, { push: 1, duration: 0.8, ease: "power3.in", onUpdate: frame }, 0);
+      timeline.to(veil, { autoAlpha: 1, duration: still ? 0.3 : 0.45, ease: "none" }, still ? 0 : 0.35);
     },
     [frame, reduced, router],
   );
+
+  // Back from Google's page: in with the session it brought, or told plainly why not.
+  useEffect(() => {
+    let live = true;
+    auth.completeRedirect().then((result) => {
+      if (!live || !result) return;
+      if (result.ok) {
+        setGranted(result.session);
+        leave(0.95);
+      } else {
+        setNotice({ tone: "error", text: result.message });
+      }
+    });
+    return () => {
+      live = false;
+    };
+  }, [leave]);
 
   const locked = busy !== null || granted !== null;
 
@@ -237,6 +259,8 @@ export function Credentials() {
     setNotice(null);
     setBusy("google");
     const result = await auth.signInWithGoogle();
+    // On its way to Google's page: the button keeps saying so until the browser leaves.
+    if (result.ok === "leaving") return;
     setBusy(null);
     if (result.ok) {
       setGranted(result.session);
@@ -260,9 +284,12 @@ export function Credentials() {
     setNotice({ tone: "info", text: result.message });
   };
 
-  const test = () => {
+  const test = async () => {
     if (locked) return;
-    setGranted(auth.signInAsTest());
+    setBusy("test");
+    const session = await auth.signInAsTest();
+    setBusy(null);
+    setGranted(session);
     leave(0);
   };
 
@@ -305,10 +332,16 @@ export function Credentials() {
 
   return (
     <main ref={root} className="auth" data-mode={mode} data-granted={granted ? "true" : undefined}>
+      {/* The room, where it's on screen at all: mounted once the page knows its size (behind the opening ink), so a phone never downloads it. */}
       <div className="auth-room" aria-hidden="true">
-        {/* eslint-disable-next-line @next/next/no-img-element -- the supplied artwork, drawn as it is and never resampled by an optimiser */}
-        <img className="auth-art" src={ROOM.src} width={ROOM.width} height={ROOM.height} alt="" draggable={false} />
-        <Ambient />
+        {roomShown ? (
+          reduced ? (
+            // eslint-disable-next-line @next/next/no-img-element -- the supplied animation's first frame, shown still
+            <img className="auth-art" src={ROOM.poster} width={ROOM.width} height={ROOM.height} alt="" draggable={false} />
+          ) : (
+            <video className="auth-art" src={ROOM.src} poster={ROOM.poster} width={ROOM.width} height={ROOM.height} autoPlay muted loop playsInline preload="auto" disablePictureInPicture />
+          )
+        ) : null}
       </div>
 
       <div className="auth-glass">

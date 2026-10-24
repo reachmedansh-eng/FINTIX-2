@@ -1,21 +1,28 @@
 import { asset } from "@/lib/asset";
 
 /**
- * The workstation artwork and how a viewport looks at it.
+ * The workstation and how a viewport looks at it.
  *
- * The supplied file is drawn whole and unaltered. Where the screen is large
- * enough, the entire room is visible and the sign-in sits inside the monitor.
- * Where it is not, the view moves closer to the monitor instead of shrinking
- * the interface: the viewport adapts to the artwork, never the reverse.
+ * The supplied animation (a nine-second seamless loop of the room, the city and the
+ * water alive behind the monitor) is drawn whole and unaltered, with its first
+ * frame as the poster until it plays. Where the screen is large enough, the
+ * entire room is visible and the sign-in sits inside the monitor. Where it is
+ * not, the view moves closer to the monitor instead of shrinking the
+ * interface: the viewport adapts to the artwork, never the reverse. Phones and
+ * upright screens skip the room altogether (see `ROOM_SHOWN`).
  */
 
 export const ROOM = {
-  src: asset("/auth/workstation.png"),
-  width: 1671,
-  height: 941,
-  /** The blank monitor's glass, in artwork pixels. */
-  screen: { x: 476, y: 231, width: 729, height: 418 },
+  src: asset("/auth/room-loop.mp4"),
+  poster: asset("/auth/room-loop.jpg"),
+  width: 1920,
+  height: 1080,
+  /** The blank monitor's glass, in the video's pixels (measured from its frames). */
+  screen: { x: 544, y: 262, width: 844, height: 485 },
 } as const;
+
+/** Screens wide enough to show the room. The rest (phones, upright screens) go all the way in and never show it. Mirrors `framesFor`. */
+export const ROOM_SHOWN = "(min-width: 720px) and (min-aspect-ratio: 11/10)";
 
 /** The smallest the monitor's glass may be on screen for the interface to sit inside it comfortably. */
 const NEEDS = { width: 640, height: 366 };

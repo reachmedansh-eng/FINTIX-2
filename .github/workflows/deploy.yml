@@ -32,6 +32,9 @@ jobs:
           STATIC_EXPORT: "1"
           # Pages serves a project site from /<repository>/.
           PAGES_BASE_PATH: /${{ github.event.repository.name }}
+          # The Supabase project behind sign-in. Both are public by design: the key is the publishable one, and row-level security guards the data.
+          NEXT_PUBLIC_SUPABASE_URL: https://jaqrlkeecvqfagdtfiup.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_Kja2tQKJ1rDZTohzvrfdeA_yTAqwTKY
       # In-app navigation asks for each page's data under a flattened name; write those copies.
       - run: node scripts/flatten-segments.mjs out
       # Without this, Pages would skip the _next folder.

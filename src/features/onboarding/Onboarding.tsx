@@ -106,6 +106,12 @@ export function Onboarding() {
 
   // Sign-in is the only way on, so it is fetched ahead and the hand-off doesn't wait on it.
   useEffect(() => {
+    // A sign-in answer (Google, or a reset link) that the auth server sent to the site's front door belongs to the credentials page.
+    const answer = new URLSearchParams(window.location.search);
+    if (answer.has("code") || answer.has("error_description")) router.replace(`${PRODUCT_ROUTE}${window.location.search}${window.location.hash}`);
+  }, [router]);
+
+  useEffect(() => {
     router.prefetch(PRODUCT_ROUTE);
   }, [router]);
 

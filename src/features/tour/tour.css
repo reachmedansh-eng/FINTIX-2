@@ -1,0 +1,357 @@
+/* ------------------------------------------------------------------ */
+/* FINTIX — the product tour: Neo shows a new player around Home       */
+/* ------------------------------------------------------------------ */
+
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--fx-text);
+}
+
+/* ---- The dimmed page and the window on the part Neo is pointing at ---- */
+
+.tour-shade {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.tour-hole {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  /* The window's shadow is the dimmed page around it. */
+  box-shadow: 0 0 0 200vmax rgba(1, 2, 14, 0.76);
+  outline: 2px solid var(--cyan);
+  transition:
+    transform 420ms var(--ease-in-out),
+    width 420ms var(--ease-in-out),
+    height 420ms var(--ease-in-out),
+    outline-color var(--t-base) ease;
+}
+
+/* Gold corners, as on the trading floor's selection: what Neo is talking about. */
+.tour-hole::before,
+.tour-hole::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  pointer-events: none;
+  transition: opacity var(--t-base) ease;
+}
+
+.tour-hole::before {
+  background:
+    linear-gradient(var(--gold), var(--gold)) top left / 14px 3px,
+    linear-gradient(var(--gold), var(--gold)) top left / 3px 14px,
+    linear-gradient(var(--gold), var(--gold)) top right / 14px 3px,
+    linear-gradient(var(--gold), var(--gold)) top right / 3px 14px,
+    linear-gradient(var(--gold), var(--gold)) bottom left / 14px 3px,
+    linear-gradient(var(--gold), var(--gold)) bottom left / 3px 14px,
+    linear-gradient(var(--gold), var(--gold)) bottom right / 14px 3px,
+    linear-gradient(var(--gold), var(--gold)) bottom right / 3px 14px;
+  background-repeat: no-repeat;
+}
+
+/* A slow pulse outward from the window, so the eye finds it after the page moves. */
+.tour-hole::after {
+  inset: -2px;
+  border: 2px solid var(--cyan);
+  animation: tour-ping 1.8s var(--ease-out) infinite;
+}
+
+@keyframes tour-ping {
+  from { opacity: 0.7; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.04, 1.12); }
+}
+
+.tour-hole[data-empty="true"] {
+  outline-color: transparent;
+}
+
+.tour-hole[data-empty="true"]::before,
+.tour-hole[data-empty="true"]::after {
+  opacity: 0;
+  animation: none;
+}
+
+/* ---- Neo and what he says ---- */
+
+.tour-cast {
+  --neo-h: clamp(180px, 34vh, 320px);
+  --from-x: 0px;
+  --from-y: 24px;
+
+  position: fixed;
+  bottom: var(--sp-6);
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  max-width: calc(100vw - var(--gutter) * 2);
+}
+
+/* Neo stands at the edge of the screen, away from the part he's pointing at; with nothing to point at, in the middle. */
+.tour[data-side="right"] .tour-cast {
+  --from-x: 56px;
+  --from-y: 0px;
+  right: var(--gutter);
+  flex-direction: row-reverse;
+}
+
+.tour[data-side="left"] .tour-cast {
+  --from-x: -56px;
+  --from-y: 0px;
+  left: var(--gutter);
+}
+
+.tour[data-side="middle"] .tour-cast {
+  /* Hello and goodbye: Neo at his full size, centre stage. */
+  --neo-h: clamp(220px, 46vh, 420px);
+  left: 50%;
+  bottom: max(var(--sp-6), 12vh);
+  transform: translateX(-50%);
+}
+
+.tour-neo {
+  flex: none;
+  display: block;
+  height: var(--neo-h);
+  aspect-ratio: var(--ratio);
+  margin-bottom: calc(var(--sp-6) * -1);
+  animation: tour-in 420ms var(--ease-out) both;
+}
+
+.tour-neo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  animation: tour-bob 3.6s ease-in-out infinite;
+}
+
+/* He hovers on his jet, as everywhere else he appears. */
+@keyframes tour-bob {
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes tour-in {
+  from { opacity: 0; translate: var(--from-x) var(--from-y); }
+}
+
+.tour-box {
+  position: relative;
+  width: min(460px, 100%);
+  margin-bottom: calc(var(--neo-h) * 0.32);
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
+  border: 2px solid rgba(47, 192, 255, 0.7);
+  background: #0a1444;
+  box-shadow: var(--fx-float);
+  animation: tour-in 360ms 60ms var(--ease-out) both;
+}
+
+/* The speech tail, toward Neo. */
+.tour-box::after {
+  content: "";
+  position: absolute;
+  bottom: 28px;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border: inherit;
+  border-width: 0 0 2px 2px;
+}
+
+.tour[data-side="right"] .tour-box::after {
+  right: -8px;
+  transform: rotate(-135deg);
+}
+
+.tour[data-side="left"] .tour-box::after,
+.tour[data-side="middle"] .tour-box::after {
+  left: -8px;
+  transform: rotate(45deg);
+}
+
+.tour-name {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  margin: 0 0 var(--sp-2);
+  padding-right: 92px;
+}
+
+.tour-name .px {
+  font-size: max(9.6px, round(12px, var(--snap)));
+  color: var(--cyan);
+}
+
+.tour-count {
+  font-size: var(--fs-meta);
+  color: var(--fx-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.tour-title {
+  margin: 0 0 var(--sp-2);
+  font-size: round(down, 24px, var(--snap));
+  line-height: 1.2;
+  color: var(--white);
+}
+
+.tour-text {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--fx-text);
+}
+
+.tour-rest {
+  visibility: hidden;
+}
+
+.tour-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3) var(--sp-4);
+  margin-top: var(--sp-5);
+}
+
+.tour-dots {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tour-dots li {
+  width: 8px;
+  height: 8px;
+  background: var(--fx-lift);
+  transition: background-color var(--t-base) ease;
+}
+
+.tour-dots li[data-state="done"] {
+  background: var(--fx-buy-hi);
+}
+
+.tour-dots li[data-state="now"] {
+  background: var(--gold);
+}
+
+.tour-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-left: auto;
+}
+
+.tour-actions .sim-button {
+  text-decoration: none;
+}
+
+.tour-skip {
+  padding: var(--sp-2) var(--sp-1);
+  border: 0;
+  background: none;
+  font-size: var(--fs-body);
+  color: var(--fx-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tour-skip:hover {
+    color: var(--fx-text);
+  }
+}
+
+.tour-out {
+  position: absolute;
+  top: var(--sp-2);
+  right: var(--sp-3);
+}
+
+/* ---- Phone: Neo smaller, at the left, the box across the rest of the screen ---- */
+
+.tour[data-phone] .tour-cast {
+  --neo-h: 128px;
+  --from-x: -32px;
+  --from-y: 0px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  max-width: none;
+  transform: none;
+  flex-direction: row;
+  gap: 0;
+}
+
+.tour[data-phone] .tour-neo {
+  margin: 0 -10px calc(var(--sp-2) * -1) -8px;
+}
+
+.tour[data-phone] .tour-box {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  margin-bottom: 0;
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+}
+
+.tour[data-phone] .tour-box::after {
+  display: none;
+}
+
+.tour[data-phone] .tour-title {
+  font-size: round(down, 18px, var(--snap));
+}
+
+.tour[data-phone] .tour-text {
+  font-size: 15px;
+}
+
+.tour[data-phone] .tour-foot {
+  margin-top: var(--sp-3);
+}
+
+.tour[data-phone] .tour-actions .sim-button {
+  min-height: 40px;
+  padding: 0 var(--sp-4);
+  font-size: var(--fs-body);
+}
+
+/* ---- Reduced motion: the window jumps, Neo stands still, nothing pulses ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-hole,
+  .tour-dots li {
+    transition: none;
+  }
+
+  .tour-hole::after,
+  .tour-neo img {
+    animation: none;
+  }
+
+  .tour-neo,
+  .tour-box {
+    animation: tour-fade 200ms ease both;
+  }
+}
+
+@keyframes tour-fade {
+  from { opacity: 0; }
+}

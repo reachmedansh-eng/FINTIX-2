@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Loader } from "@/features/shell/Loader";
 import { SiteNav, useFirstName } from "@/features/shell/SiteNav";
+import { Tour } from "@/features/tour/Tour";
 import { STARTING_CASH, useAccount, useUnsaved, type Account, type Trade } from "@/features/trade/account";
 import { useMarketMinute } from "@/features/trade/clock";
 import { assetByTicker, stamp } from "@/features/trade/engine";
@@ -172,6 +173,9 @@ function World({ account, minute }: { account: Account; minute: number }) {
       </div>
 
       <Ledger trades={account.trades} fresh={cause !== arrivedWith ? cause : undefined} mode={mode} />
+
+      {/* A first visit: once the opening has played, Neo shows the player around. */}
+      <Tour ready={mode !== "full" || go} context={{ name, holdings: holdings.length }} />
     </div>
   );
 }
